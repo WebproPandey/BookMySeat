@@ -1,10 +1,17 @@
+const express = require('express');
+const cookieParser = require('cookie-parser');
+const cors = require('cors');
+const userroutes = require('./routes/userroutes')
+const adminroutes = require('./routes/adminroutes')
+// const { errorHandler } = require('./middlewares/errorHandler');
 
-const express =  require("express")
-const app =  express()
-require("dotenv").config()
+const app = express();
 
-app.get("/" , (req, res) =>{
-    res.send("hello world")
-})
+app.use(cors({ origin: true, credentials: true }));
+app.use(express.json());
+app.use(cookieParser());
+app.use('/api/user', userroutes);
+app.use('/api/admin', adminroutes);
+// app.use(errorHandler);
 
-module.exports = app
+module.exports = app;

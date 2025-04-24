@@ -1,0 +1,252 @@
+// Complete backend for Bus Ticket Booking System with Admin, QR, Email/SMS, Wallet, and Services Layer
+
+// ------------ server.js -------------
+const express = require('express');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const routes = require('./routes');
+const { errorHandler } = require('./middlewares/errorHandler');
+
+dotenv.config();
+const app = express();
+
+app.use(cors({ origin: true, credentials: true }));
+app.use(express.json());
+app.use(cookieParser());
+app.use('/api', routes);
+app.use(errorHandler);
+
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => {
+    app.listen(process.env.PORT, () => console.log(`Server running on ${process.env.PORT}`));
+  })
+  .catch(err => console.error(err));
+
+module.exports = app;
+
+// ------------ models/User.js -------------
+const mongoose = require('mongoose');
+
+const userSchema = new mongoose.Schema({
+  name: String,
+  email: { type: String, unique: true },
+  phone: String,
+  password: String,
+  walletBalance: { type: Number, default: 0 },
+  role: { type: String, default: 'user' }
+});
+
+module.exports = mongoose.model('User', userSchema);
+
+// ------------ models/Bus.js -------------
+const busSchema = new mongoose.Schema({
+  name: String,
+  route: { from: String, to: String },
+  distance: Number,
+  pricePerKm: Number,
+  busType: String,
+  seats: Number,
+  availableSeats: [Number],
+  timings: String
+});
+
+module.exports = mongoose.model('Bus', busSchema);
+
+// ------------ models/Ticket.js -------------
+ticketSchema = new mongoose.Schema({
+  userId: mongoose.Schema.Types.ObjectId,
+  busId: mongoose.Schema.Types.ObjectId,
+  from: String,
+  to: String,
+  distance: Number,
+  seatsBooked: [Number],
+  totalFare: Number,
+  ticketId: String,
+  bookingTime: Date,
+  qrCodeUrl: String
+});
+
+module.exports = mongoose.model('Ticket', ticketSchema);
+
+// ------------ middlewares/authMiddleware.js -------------
+const jwt = require('jsonwebtoken');
+
+module.exports = (req, res, next) => {
+  const token = req.cookies.token;
+  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    res.status(401).json({ error: 'Invalid token' });
+  }
+};
+
+// ------------ routes/index.js -------------
+const express = require('express');
+const router = express.Router();
+const userRoutes = require('./userRoutes');
+const ticketRoutes = require('./ticketRoutes');
+const busRoutes = require('./busRoutes');
+const adminRoutes = require('./adminRoutes');
+const authMiddleware = require('../middlewares/authMiddleware');
+
+router.use('/users', userRoutes);
+router.use('/tickets', authMiddleware, ticketRoutes);
+router.use('/buses', authMiddleware, busRoutes);
+router.use('/admin', authMiddleware, adminRoutes);
+
+module.exports = router;
+
+// ------------ routes/userRoutes.js -------------
+const express = require('express');
+const router = express.Router();
+const { registerUser, loginUser } = require('../controllers/userController');
+
+router.post('/register', registerUser);
+router.post('/login', loginUser);
+
+module.exports = router;
+
+// ------------ routes/adminRoutes.js -------------
+const express = require('express');
+const router = express.Router();
+const { addBus } = require('../controllers/adminController');
+
+router.post('/add-bus', addBus);
+
+module.exports = router;
+
+// ------------ controllers/userController.js -------------
+const userService = require('../services/userService');
+
+exports.registerUser = async (req, res) => {
+  try {
+    const { name, email, phone, password } = req.body;
+    const existingUser = await userService.getUserByEmail(email);
+    if (existingUser) return res.status(400).json({ error: 'Email already in use' });
+    const result = await userService.registerUser({ name, email, phone, password });
+    res.status(201).json(result);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+exports.loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const result = await userService.loginUser({ email, password });
+    res.cookie('token', result.token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+    res.status(200).json({ message: 'Login successful', token: result.token });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// ------------ controllers/adminController.js -------------
+const adminService = require('../services/adminService');
+
+exports.addBus = async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+    const bus = await adminService.addBus(req.body);
+    res.status(201).json(bus);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// ------------ controllers/ticketController.js -------------
+const ticketService = require('../services/ticketService');
+
+exports.bookTicket = async (req, res) => {
+  try {
+    const ticket = await ticketService.bookTicket({ ...req.body, userId: req.user.userId });
+    res.status(201).json(ticket);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// ------------ services/userService.js -------------
+const User = require('../models/User');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+exports.registerUser = async ({ name, email, phone, password }) => {
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const user = new User({ name, email, phone, password: hashedPassword });
+  await user.save();
+  return { message: 'User registered successfully' };
+};
+
+exports.loginUser = async ({ email, password }) => {
+  const user = await User.findOne({ email });
+  if (!user) throw new Error('User not found');
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) throw new Error('Invalid credentials');
+  const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
+  return { token };
+};
+
+exports.getUserByEmail = async (email) => {
+  return await User.findOne({ email });
+};
+
+// ------------ services/adminService.js -------------
+const Bus = require('../models/Bus');
+
+exports.addBus = async ({ name, route, distance, pricePerKm, busType, seats, timings }) => {
+  const availableSeats = Array.from({ length: seats }, (_, i) => i + 1);
+  const bus = new Bus({ name, route, distance, pricePerKm, busType, seats, availableSeats, timings });
+  await bus.save();
+  return bus;
+};
+
+// ------------ services/ticketService.js -------------
+const Ticket = require('../models/Ticket');
+const Bus = require('../models/Bus');
+const User = require('../models/User');
+const { v4: uuidv4 } = require('uuid');
+const qrcode = require('qrcode');
+const { sendSMS, sendEmail } = require('../utils/notify');
+
+exports.bookTicket = async ({ userId, busId, seats }) => {
+  const bus = await Bus.findById(busId);
+  const user = await User.findById(userId);
+  if (!bus || !user) throw new Error('User or Bus not found');
+  const totalFare = bus.distance * bus.pricePerKm * seats.length;
+  if (user.walletBalance < totalFare) throw new Error('Insufficient wallet balance');
+  bus.availableSeats = bus.availableSeats.filter(seat => !seats.includes(seat));
+  await bus.save();
+  const ticketId = uuidv4();
+  const qrData = `TicketID: ${ticketId}\nFrom: ${bus.route.from}\nTo: ${bus.route.to}\nSeats: ${seats.join(',')}`;
+  const qrCodeUrl = await qrcode.toDataURL(qrData);
+  const ticket = new Ticket({ userId, busId, from: bus.route.from, to: bus.route.to, distance: bus.distance, seatsBooked: seats, totalFare, ticketId, bookingTime: new Date(), qrCodeUrl });
+  await ticket.save();
+  user.walletBalance -= totalFare;
+  await user.save();
+  sendSMS(user.phone, `Ticket booked! ID: ${ticketId}`);
+  sendEmail(user.email, 'Your Bus Ticket', `Your ticket from ${bus.route.from} to ${bus.route.to} is confirmed.`);
+  return ticket;
+};
+
+// ------------ utils/notify.js -------------
+const sendSMS = (phone, message) => {
+  console.log(`SMS sent to ${phone}: ${message}`);
+};
+
+const sendEmail = (email, subject, message) => {
+  console.log(`Email sent to ${email}: ${subject} - ${message}`);
+};
+
+module.exports = { sendSMS, sendEmail };
+
+// ------------ .env -------------
+PORT=5000
+MONGO_URI=mongodb://localhost:27017/bus-ticket
+JWT_SECRET=supersecretkey
+NODE_ENV=development
