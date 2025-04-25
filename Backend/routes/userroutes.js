@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { registerUser, loginUser } = require('../controllers/userController');
+const { registerUser, loginUser, getAvailableBuses, getTicketPDF, bookTicket } = require('../controllers/userController');
+const userAuth = require('../middlewares/authMiddleware');
+
 
 router.post('/register', registerUser);
 router.post('/login', loginUser);
-// router.get('/tickets', authMiddleware, requireRole('user'), ticketRoutes);
-// router.get('/buses', authMiddleware, requireRole('user'), busRoutes);
+router.get('/tickets/available-buses', getAvailableBuses);    
+router.post('/tickets/book',userAuth, bookTicket);                      
+router.get('/tickets/pdf/:ticketId',userAuth, getTicketPDF); 
 
 module.exports = router;

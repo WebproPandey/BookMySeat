@@ -16,19 +16,22 @@ exports.registerAdmin = async (req, res) => {
 exports.loginAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
+
     const result = await adminService.loginAdmin({ email, password });
+
     res.cookie('token', result.token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: process.env.NODE_ENV === 'production', 
       sameSite: 'Lax',
+      maxAge: 24 * 60 * 60 * 3000 
     });
+
     res.status(200).json({ message: 'Admin login successful', token: result.token });
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
-
-
 
 
 // Add Bus
