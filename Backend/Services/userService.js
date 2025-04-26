@@ -1,6 +1,7 @@
 const User = require('../models/user.modle');
 const Bus = require('../models/bus.model');
 const Ticket = require('../models/ticket.model');
+const PromoCode = require('../models/promoCode.modle');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require('uuid');
@@ -45,13 +46,22 @@ exports.getAvailableBuses = async () => {
   return await Bus.find();
 };
 
-exports.bookTicket = async ({ userId, busId, seats }) => {
+exports.bookTicket = async ({ busId, seats, couponCode, userId }) => {
+  try {
   const bus = await Bus.findById(busId);
   const user = await User.findById(userId);
+
   if (!bus || !user) throw new Error('User or Bus not found');
 
-  const typeKey = bus.busType.toLowerCase(); // e.g., 'deluxe'
-  const pricePerKm = bus.pricePerKm[typeKey];
+  const priceKeyMap = {
+    'ac': 'ac',
+    'non-ac': 'nonAc',
+    'deluxe': 'deluxe',
+    'non-deluxe': 'nonDeluxe'
+  };
+
+  const typeKey = priceKeyMap[bus.busType.toLowerCase()];
+  const pricePerKm = typeKey ? bus.pricePerKm[typeKey] : null;
 
   if (!pricePerKm) {
     throw new Error(`Invalid or missing pricePerKm for bus type: ${bus.busType}`);
@@ -61,19 +71,29 @@ exports.bookTicket = async ({ userId, busId, seats }) => {
     throw new Error('No seats selected');
   }
 
-  const totalFare = Number(bus.distance) * Number(pricePerKm) * seats.length;
+  let totalFare = Number(bus.distance) * Number(pricePerKm) * seats.length;
 
-  // if (user.walletBalance < totalFare) {
-  //   throw new Error('Insufficient wallet balance');
-  // }
+  let discountApplied = 0;
+  if (couponCode) {
+    const promo = await PromoCode.findOne({ code: couponCode.toUpperCase() });
 
-  // Update seat availability
+    if (!promo || promo.expiryDate < new Date() || promo.usedCount >= promo.usageLimit) {
+      throw new Error('Invalid or expired promo code');
+    }
+
+    discountApplied = (totalFare * promo.discountPercent) / 100;
+    totalFare -= discountApplied;
+
+    promo.usedCount += 1;
+    await promo.save();
+  }
+
   bus.availableSeats = bus.availableSeats.filter(seat => !seats.includes(seat));
   await bus.save();
 
-  const ticketId = uuidv4();
+  const ticketId = require('uuid').v4();
   const qrData = `TicketID: ${ticketId}\nFrom: ${bus.route.from}\nTo: ${bus.route.to}\nSeats: ${seats.join(',')}`;
-  const qrCodeUrl = await qrcode.toDataURL(qrData);
+  const qrCodeUrl = await require('qrcode').toDataURL(qrData);
 
   const ticket = new Ticket({
     userId,
@@ -85,15 +105,23 @@ exports.bookTicket = async ({ userId, busId, seats }) => {
     totalFare,
     ticketId,
     bookingTime: new Date(),
-    qrCodeUrl
+    qrCodeUrl,
+    promoCode: couponCode,
+    discountApplied
   });
 
   await ticket.save();
+
   user.walletBalance -= totalFare;
   await user.save();
 
   return ticket;
-};
+  } catch (err) {
+    console.log("BookTicket:", err.message);
+    throw new Error(err.message);
+  }
+}
+
 
 exports.getTicketById = async (ticketId, userId) => {
   return await Ticket.findOne({ ticketId, userId })

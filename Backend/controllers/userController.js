@@ -1,5 +1,5 @@
 const userService = require('../Services/userService');
-// const ticketService = require('../services/userService');
+const PromoCode = require('../models/promoCode.modle');
 const PDFDocument = require('pdfkit');
 
 exports.registerUser = async (req, res) => {
@@ -43,16 +43,36 @@ exports.getAvailableBuses = async (req, res) => {
   }
 };
 
+
+exports.getAllPromos = async (req, res) => {
+  const promos = await PromoCode.find({ expiryDate: { $gte: new Date() } });
+  res.json(promos);
+};
+
 exports.bookTicket = async (req, res) => {
   try {
     const userId = req.user.userId;
-    const ticket = await userService.bookTicket({ ...req.body, userId });
+    if (!userId) {
+      return res.status(400).json({ error: "User not authenticated" }); 
+    }
+
+    const { busId, seats, couponCode } = req.body;
+
+    if (!busId || !seats || seats.length === 0) {
+      return res.status(400).json({ error: "Bus ID and seat(s) are required" });
+    }
+
+    const ticket = await userService.bookTicket({ busId, seats, couponCode, userId });
+
     res.status(201).json(ticket);
   } catch (err) {
-    console.log("BookTicket:" ,err.message)
-    res.status(400).json({ error: err.message });
+    console.log("BookTicket:", err.message);
+    res.status(500).json({ error: err.message || "An error occurred while booking the ticket" });
   }
 };
+
+
+
 
 exports.getTicketPDF = async (req, res) => {
   try {
@@ -83,3 +103,4 @@ exports.getTicketPDF = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+

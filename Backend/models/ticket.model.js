@@ -43,6 +43,14 @@ const ticketSchema = new mongoose.Schema({
   qrCodeUrl: {
     type: String,  
     required: true
+  },
+  promoCode: {  
+    type: String,
+    required: false  
+  },
+  discountApplied: { 
+    type: Number,
+    default: 0
   }
 });
 

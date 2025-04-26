@@ -1,5 +1,7 @@
 const adminService = require('../Services/adminService');
 const Bus = require('../models/bus.model');
+const PromoCode = require('../models/promoCode.modle');
+
 
 
 exports.registerAdmin = async (req, res) => {
@@ -92,4 +94,23 @@ exports.deleteBus = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+// controller/adminController.js
+
+
+exports.PromoCode = async (req, res) => {
+  try {
+    const { code, discountPercent, expiryDate, usageLimit } = req.body;
+
+    const existing = await PromoCode.findOne({ code: code.toUpperCase() });
+    if (existing) return res.status(400).json({ message: 'Promo code already exists' });
+
+    const promo = new PromoCode({ code, discountPercent, expiryDate, usageLimit });
+    await promo.save();
+    res.json({ message: 'Promo created', promo });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 

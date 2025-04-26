@@ -22,11 +22,15 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 6
   },
-  // walletBalance: {
-  //   type: Number,
-  //   default: 1000,
-  //   min: 0
-  // },
+  walletBalance: {
+    type: Number,
+    default: 1000,
+    min: 0
+  },
+  bookingCount: {
+    type: Number,
+    default: 0
+  },
   role: {
     type: String,
     default: 'user'
