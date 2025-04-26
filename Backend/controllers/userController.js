@@ -1,5 +1,7 @@
 const userService = require('../Services/userService');
 const PromoCode = require('../models/promoCode.modle');
+const Bus = require('../models/bus.model');
+const Ticket = require('../models/ticket.model');
 const PDFDocument = require('pdfkit');
 
 exports.registerUser = async (req, res) => {
@@ -72,6 +74,29 @@ exports.bookTicket = async (req, res) => {
 };
 
 
+exports.getMyTickets = async (req, res) => {
+  try {
+    const userId = req.user.userId || req.user._id;  
+    if (!userId) {
+      return res.status(400).json({ error: "User not authenticated" });
+    }
+
+    const tickets = await Ticket.find({ userId })
+      .populate('busId')   
+      .populate('userId')
+      .sort({ bookingTime: -1 });
+
+    res.status(200).json({
+      totalTickets: tickets.length,
+      tickets,
+    });
+
+  } catch (err) {
+    console.error("getMyTickets:", err.message);
+    res.status(500).json({ error: 'Unable to fetch tickets' });
+  }
+};
+
 
 
 exports.getTicketPDF = async (req, res) => {
@@ -97,10 +122,106 @@ exports.getTicketPDF = async (req, res) => {
     doc.text(`Bus Type: ${ticket.busId.busType}`);
     doc.text(`Total Fare: ₹${ticket.totalFare}`);
     doc.text(`Date & Time: ${ticket.bookingTime.toLocaleString()}`);
-
     doc.end();
+
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
+
+
+exports.cancelTicket = async (req, res) => {
+  try {
+    const { ticketId } = req.params;
+    const userId = req.user.userId || req.user._id;
+
+    // Populate only busId, not userId!
+    const ticket = await Ticket.findOne({ ticketId }).populate('busId');
+
+    if (!ticket) {
+      return res.status(404).json({ error: 'Ticket not found' });
+    }
+
+    if (!ticket.userId) {
+      return res.status(400).json({ error: 'Ticket does not have a user assigned' });
+    }
+
+    // userId is simple ObjectId (string) => no populate needed
+    if (ticket.userId.toString() !== userId.toString()) {
+      return res.status(403).json({ error: 'Unauthorized to cancel this ticket' });
+    }
+
+    if (ticket.status === 'cancelled') {
+      return res.status(400).json({ error: 'Ticket is already cancelled' });
+    }
+
+    // Seats ko wapas bus ke available seats me add karo (without duplicate)
+    if (ticket.busId && Array.isArray(ticket.busId.availableSeats)) {
+      ticket.seatsBooked.forEach((seat) => {
+        if (!ticket.busId.availableSeats.includes(seat)) {
+          ticket.busId.availableSeats.push(seat);
+        }
+      });
+
+      // Seats sort ascending
+      ticket.busId.availableSeats.sort((a, b) => a - b);
+      await ticket.busId.save();
+    }
+
+    // Ticket ko cancel mark karo
+    ticket.status = 'cancelled';
+    await ticket.save();
+
+    res.status(200).json({ message: 'Ticket cancelled successfully' });
+
+  } catch (err) {
+    console.error('CancelTicket:', err.message);
+    res.status(500).json({ error: 'Unable to cancel ticket' });
+  }
+};
+
+
+
+exports.deleteTicket = async (req, res) => {
+  try {
+    const { ticketId } = req.params;
+    const userId = req.user.userId || req.user._id;
+
+    const ticket = await Ticket.findOne({ ticketId });
+
+    if (!ticket) {
+      return res.status(404).json({ error: 'Ticket not found' });
+    }
+
+    if (ticket.userId.toString() !== userId.toString()) {
+      return res.status(403).json({ error: 'Unauthorized to delete this ticket' });
+    }
+
+    // Seats ko wapas availableSeats me daalna (only if not present)
+    const bus = await Bus.findById(ticket.busId);
+    if (bus) {
+      ticket.seatsBooked.forEach((seat) => {
+        if (!bus.availableSeats.includes(seat)) {
+          bus.availableSeats.push(seat);
+        }
+      });
+
+      // Seats ko sort karo ascending order me
+      bus.availableSeats.sort((a, b) => a - b);
+
+      await bus.save();
+    }
+
+    await Ticket.deleteOne({ _id: ticket._id });
+
+    res.status(200).json({ message: 'Ticket deleted permanently' });
+
+  } catch (err) {
+    console.error('deleteTicket:', err.message);
+    res.status(500).json({ error: 'Unable to delete ticket' });
+  }
+};
+
+
+
 

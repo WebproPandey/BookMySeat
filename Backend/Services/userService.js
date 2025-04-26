@@ -109,10 +109,8 @@ exports.bookTicket = async ({ busId, seats, couponCode, userId }) => {
     promoCode: couponCode,
     discountApplied
   });
-
   await ticket.save();
-
-  user.walletBalance -= totalFare;
+  user.walletBalance = totalFare;
   await user.save();
 
   return ticket;

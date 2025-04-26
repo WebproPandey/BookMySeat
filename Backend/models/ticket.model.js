@@ -51,6 +51,11 @@ const ticketSchema = new mongoose.Schema({
   discountApplied: { 
     type: Number,
     default: 0
+  },
+  status: {
+    type: String,
+    enum: ['booked', 'cancelled'],  
+    default: 'booked'
   }
 });
 
