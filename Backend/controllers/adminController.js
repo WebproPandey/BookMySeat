@@ -1,6 +1,9 @@
 const adminService = require('../Services/adminService');
 const Bus = require('../models/bus.model');
 const PromoCode = require('../models/promoCode.modle');
+const User = require('../models/user.modle');
+const Ticket = require('../models/ticket.model');
+const moment = require('moment');
 
 
 
@@ -41,13 +44,14 @@ exports.addBus = async (req, res) => {
   try {
     const {
       name, route, pickupTime, dropTime, distance,
-      pricePerKm, busType, seats
+      pricePerKm, busType, seats ,busImage  
     } = req.body;
 
     const availableSeats = Array.from({ length: seats }, (_, i) => i + 1);
 
     const bus = new Bus({
       name,
+      busImage,
       route,
       pickupTime,
       dropTime,
@@ -113,4 +117,153 @@ exports.PromoCode = async (req, res) => {
   }
 };
 
+
+exports.getAllPromoCodes = async (req, res) => {
+  try {
+    const promos = await PromoCode.find().sort({ createdAt: -1 });
+    res.json(promos);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// ✔ Update promo code by ID
+exports.updatePromoCode = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const update = req.body;
+
+    const promo = await PromoCode.findByIdAndUpdate(id, update, { new: true });
+    if (!promo) return res.status(404).json({ message: 'Promo code not found' });
+
+    res.json({ message: 'Promo updated', promo });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// ✔ Delete promo code by ID
+exports.deletePromoCode = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const promo = await PromoCode.findByIdAndDelete(id);
+    if (!promo) return res.status(404).json({ message: 'Promo code not found' });
+
+    res.json({ message: 'Promo deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select('-password');
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching users', error: err.message });
+  }
+};
+
+exports.getUserBookingHistory = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id).select('-password');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const tickets = await Ticket.find({ userId: id })
+      .populate('busId', 'name route pickupTime dropTime busType') 
+      .sort({ bookingTime: -1 });
+
+    res.status(200).json({
+      user,
+      bookingHistory: tickets
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching booking history', error: err.message });
+  }
+};
+
+
+
+
+exports.getRevenueStats = async (req, res) => {
+  try {
+    const today = moment().startOf('day');
+    const weekStart = moment().startOf('week');
+    const monthStart = moment().startOf('month');
+    const yearStart = moment().startOf('year');
+
+    const todayRevenue = await Ticket.aggregate([
+      {
+        $match: {
+          bookingTime: { $gte: today.toDate() },
+          status: 'booked'
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$totalFare" }
+        }
+      }
+    ]);
+
+    const weekRevenue = await Ticket.aggregate([
+      {
+        $match: {
+          bookingTime: { $gte: weekStart.toDate() },
+          status: 'booked'
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$totalFare" }
+        }
+      }
+    ]);
+
+    const monthRevenue = await Ticket.aggregate([
+      {
+        $match: {
+          bookingTime: { $gte: monthStart.toDate() },
+          status: 'booked'
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$totalFare" }
+        }
+      }
+    ]);
+
+    const yearRevenue = await Ticket.aggregate([
+      {
+        $match: {
+          bookingTime: { $gte: yearStart.toDate() },
+          status: 'booked'
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$totalFare" }
+        }
+      }
+    ]);
+
+    res.status(200).json({
+      today: todayRevenue[0]?.total || 0,
+      week: weekRevenue[0]?.total || 0,
+      month: monthRevenue[0]?.total || 0,
+      year: yearRevenue[0]?.total || 0
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Revenue fetch failed", error: err.message });
+  }
+};
 

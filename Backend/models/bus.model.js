@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 
 const busSchema = new mongoose.Schema({
   name: String,
+  busImage: {
+    type: String,
+    required: true
+  },
   route: {
     from: String,
     to: String
