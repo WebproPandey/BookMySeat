@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const adminAuth = require('../middlewares/adminAuthMiddleware');
 const { registerAdmin, loginAdmin, addBus, getAllBuses, updateBus, deleteBus, PromoCode ,updatePromoCode,
-    deletePromoCode, getAllPromoCodes ,  getAllUsers,getUserBookingHistory ,getRevenueStats } = require('../controllers/adminController');
+    deletePromoCode, getAllPromoCodes ,  getAllUsers,getUserBookingHistory ,getRevenueStats ,cancelAllBusBookings } = require('../controllers/adminController');
 
 router.post('/register', registerAdmin);
 router.post('/login',  loginAdmin);
@@ -21,6 +21,10 @@ router.get('/users', adminAuth, getAllUsers);
 router.get('/user/:id/bookings', adminAuth, getUserBookingHistory);
 
 router.get('/revenue', adminAuth, getRevenueStats);
+
+
+router.put('/cancel-bus-bookings/:busId', adminAuth, cancelAllBusBookings);
+
 
 
 module.exports = router;

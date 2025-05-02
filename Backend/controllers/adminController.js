@@ -267,3 +267,58 @@ exports.getRevenueStats = async (req, res) => {
   }
 };
 
+exports.cancelAllBusBookings = async (req, res) => {
+  try {
+    const busId = req.params.busId;
+
+    // 1. Find all booked tickets of that bus
+    const tickets = await Ticket.find({ busId, status: 'booked' });
+
+    if (tickets.length === 0) {
+      return res.status(404).json({ message: 'No active bookings found for this bus.' });
+    }
+
+    let cancelledTickets = [];
+    let refundDetails = [];
+
+    for (let ticket of tickets) {
+      // Cancel ticket
+      ticket.status = 'cancelled';
+      await ticket.save();
+
+      // Refund fare to user
+      const user = await User.findById(ticket.userId);
+      if (user) {
+        user.walletBalance += ticket.totalFare;
+        await user.save();
+
+        refundDetails.push({
+          userId: user._id,
+          refundedAmount: ticket.totalFare,
+          ticketId: ticket._id
+        });
+      }
+
+      // Update bus available seats
+      const bus = await Bus.findById(ticket.busId);
+      if (bus) {
+        bus.availableSeats.push(...ticket.seatsBooked);
+        bus.availableSeats = [...new Set(bus.availableSeats)].sort((a, b) => a - b);
+        await bus.save();
+      }
+
+      cancelledTickets.push(ticket._id);
+    }
+
+    res.status(200).json({
+      message: 'All bookings for the bus have been cancelled and fares refunded.',
+      cancelledTicketIds: cancelledTickets,
+      refunds: refundDetails
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: 'Mass cancellation failed', error: err.message });
+  }
+};
+
+
