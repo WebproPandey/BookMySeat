@@ -1,29 +1,31 @@
 const express = require('express');
 const router = express.Router();
-const adminAuth = require('../middlewares/adminAuthMiddleware');
+
 const { registerAdmin, loginAdmin, addBus, getAllBuses, updateBus, deleteBus, PromoCode ,updatePromoCode,
     deletePromoCode, getAllPromoCodes ,  getAllUsers,getUserBookingHistory ,getRevenueStats ,cancelAllBusBookings } = require('../controllers/adminController');
+const upload = require('../config/multerConfig');
+const adminAuthMiddleware = require('../middlewares/adminAuthMiddleware');
 
 router.post('/register', registerAdmin);
 router.post('/login',  loginAdmin);
 
-router.post('/add-bus',adminAuth,  addBus);
-router.get('/buses',adminAuth, getAllBuses);
-router.put('/bus/:id', adminAuth,updateBus);
-router.delete('/bus/:id',adminAuth, deleteBus);
+router.post('/add-bus', adminAuthMiddleware, upload.single('busImage'), addBus);
+router.get('/buses',adminAuthMiddleware, getAllBuses);
+router.put('/bus/:id', adminAuthMiddleware,updateBus);
+router.delete('/bus/:id',adminAuthMiddleware, deleteBus);
 
-router.post('/promo', adminAuth,PromoCode);
-router.put('/promo/:id', adminAuth, updatePromoCode);
-router.delete('/promo/:id', adminAuth, deletePromoCode);
-router.get('/promos', adminAuth, getAllPromoCodes);
+router.post('/promo', adminAuthMiddleware,PromoCode);
+router.put('/promo/:id', adminAuthMiddleware, updatePromoCode);
+router.delete('/promo/:id', adminAuthMiddleware, deletePromoCode);
+router.get('/promos', adminAuthMiddleware, getAllPromoCodes);
 
-router.get('/users', adminAuth, getAllUsers);
-router.get('/user/:id/bookings', adminAuth, getUserBookingHistory);
+router.get('/users', adminAuthMiddleware, getAllUsers);
+router.get('/user/:id/bookings', adminAuthMiddleware, getUserBookingHistory);
 
-router.get('/revenue', adminAuth, getRevenueStats);
+router.get('/revenue', adminAuthMiddleware, getRevenueStats);
 
 
-router.put('/cancel-bus-bookings/:busId', adminAuth, cancelAllBusBookings);
+router.put('/cancel-bus-bookings/:busId', adminAuthMiddleware, cancelAllBusBookings);
 
 
 

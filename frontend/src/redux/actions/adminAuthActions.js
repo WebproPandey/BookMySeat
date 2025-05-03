@@ -6,7 +6,9 @@ import {
   ADMIN_LOGIN_REQUEST,
   ADMIN_LOGIN_SUCCESS,
   ADMIN_LOGIN_FAILURE,
-} from "../actionTypes/adminAuthTypes";
+  ADMIN_LOGOUT,
+
+} from "../actionTypes/adminTypes";
 
 export const registerAdmin = (adminData, navigate, showError) => {
   return async (dispatch) => {
@@ -43,9 +45,14 @@ export const loginAdmin = (adminData, navigate, showError) => {
     dispatch({ type: ADMIN_LOGIN_REQUEST });
     try {
       const response = await api.post("/api/admin/login", adminData);
+      const { token } = response.data;
+      console.log("token:" , token)
+    //   localStorage.setItem("adminToken", token);
+
+
       dispatch({
         type: ADMIN_LOGIN_SUCCESS,
-        payload: response.data,
+        payload: { token },
       });
       navigate("/admin/dashboard");
     } catch (error) {
@@ -61,3 +68,11 @@ export const loginAdmin = (adminData, navigate, showError) => {
     }
   };
 };
+
+export const logoutAdmin = (navigate) => (dispatch) => {
+    localStorage.removeItem("adminToken"); 
+    dispatch({ type: ADMIN_LOGOUT });
+    navigate("/admin/login");
+};
+
+

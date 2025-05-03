@@ -4,6 +4,7 @@ const PromoCode = require('../models/promoCode.modle');
 const User = require('../models/user.modle');
 const Ticket = require('../models/ticket.model');
 const moment = require('moment');
+const { uploadBufferToCloudinary } = require('../config/cloudinaryConfig');
 
 
 
@@ -21,7 +22,7 @@ exports.registerAdmin = async (req, res) => {
 exports.loginAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
-
+     
     const result = await adminService.loginAdmin({ email, password });
 
     res.cookie('token', result.token, {
@@ -43,15 +44,7 @@ exports.loginAdmin = async (req, res) => {
 exports.addBus = async (req, res) => {
   try {
     const {
-      name, route, pickupTime, dropTime, distance,
-      pricePerKm, busType, seats ,busImage  
-    } = req.body;
-
-    const availableSeats = Array.from({ length: seats }, (_, i) => i + 1);
-
-    const bus = new Bus({
       name,
-      busImage,
       route,
       pickupTime,
       dropTime,
@@ -59,15 +52,40 @@ exports.addBus = async (req, res) => {
       pricePerKm,
       busType,
       seats,
-      availableSeats
+    } = req.body;
+
+    // Check if an image file is provided
+    if (!req.file) {
+      return res.status(400).json({ message: "Bus image is required" });
+    }
+
+    // Upload image to Cloudinary
+    const result = await uploadBufferToCloudinary(req.file.buffer);
+    const busImage = result.secure_url;
+
+    const availableSeats = Array.from({ length: seats }, (_, i) => i + 1);
+
+    const bus = new Bus({
+      name,
+      busImage,
+      route: JSON.parse(route),
+      pickupTime,
+      dropTime,
+      distance,
+      pricePerKm: JSON.parse(pricePerKm),
+      busType,
+      seats,
+      availableSeats,
     });
 
     await bus.save();
-    res.status(201).json(bus);
+    res.status(201).json({ message: "Bus created successfully", bus });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("Add Bus Error:", err.message); // Log the error
+    res.status(500).json({ message: "Failed to create bus", error: err.message });
   }
-};
+}
+
 
 // View all buses
 exports.getAllBuses = async (req, res) => {

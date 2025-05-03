@@ -5,9 +5,11 @@ import {
     ADMIN_REGISTER_REQUEST,
     ADMIN_REGISTER_SUCCESS,
     ADMIN_REGISTER_FAILURE,
-  } from "../actionTypes/adminAuthTypes";
+    ADMIN_LOGOUT,
+  } from "../actionTypes/adminTypes";
   
   const initialState = {
+    token: localStorage.getItem("adminToken") || null,
     admin: null,
     loading: false,
     error: null,
@@ -21,12 +23,13 @@ import {
   
       case ADMIN_REGISTER_SUCCESS:
       case ADMIN_LOGIN_SUCCESS:
-        return { ...state, loading: false, admin: action.payload, error: null };
+        return { ...state, loading: false, token: action.payload.token, error: null };
   
       case ADMIN_REGISTER_FAILURE:
       case ADMIN_LOGIN_FAILURE:
         return { ...state, loading: false, error: action.payload };
-  
+      case ADMIN_LOGOUT:
+            return { ...state, token: null };
       default:
         return state;
     }
