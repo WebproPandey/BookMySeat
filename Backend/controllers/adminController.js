@@ -97,13 +97,34 @@ exports.getAllBuses = async (req, res) => {
   }
 };
 
-// Update a bus
 exports.updateBus = async (req, res) => {
   try {
-    const updatedBus = await Bus.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.status(200).json(updatedBus);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+
+    const { name, from, to, pickupTime, dropTime, distance, seats, busType, pricePerKm } = req.body;
+
+    const parsedPricePerKm = pricePerKm ? JSON.parse(pricePerKm) : null;
+
+    const updateData = {
+      name,
+      route: { from, to },
+      pickupTime,
+      dropTime,
+      distance: Number(distance),
+      seats: Number(seats),
+      busType,
+      pricePerKm: parsedPricePerKm,
+    };
+
+    if (req.file) {
+      const result = await uploadBufferToCloudinary(req.file.buffer);
+      updateData.busImage = result.secure_url;
+    }
+
+    const updatedBus = await Bus.findByIdAndUpdate(req.params.id, updateData, { new: true });
+    res.status(200).json({ message: "Bus updated successfully", bus: updatedBus });
+  } catch (error) {
+    console.error("Update error:", error.message);
+    res.status(500).json({ message: "Failed to update bus", error: error.message });
   }
 };
 

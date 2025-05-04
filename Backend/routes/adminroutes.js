@@ -11,7 +11,7 @@ router.post('/login',  loginAdmin);
 
 router.post('/add-bus', adminAuthMiddleware, upload.single('busImage'), addBus);
 router.get('/buses',adminAuthMiddleware, getAllBuses);
-router.put('/bus/:id', adminAuthMiddleware,updateBus);
+router.put("/bus/:id", adminAuthMiddleware, upload.single("busImage"), updateBus); 
 router.delete('/bus/:id',adminAuthMiddleware, deleteBus);
 
 router.post('/promo', adminAuthMiddleware,PromoCode);
@@ -22,9 +22,8 @@ router.get('/promos', adminAuthMiddleware, getAllPromoCodes);
 router.get('/users', adminAuthMiddleware, getAllUsers);
 router.get('/user/:id/bookings', adminAuthMiddleware, getUserBookingHistory);
 
+
 router.get('/revenue', adminAuthMiddleware, getRevenueStats);
-
-
 router.put('/cancel-bus-bookings/:busId', adminAuthMiddleware, cancelAllBusBookings);
 
 

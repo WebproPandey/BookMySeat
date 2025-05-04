@@ -46,7 +46,7 @@ export const loginAdmin = (adminData, navigate, showError) => {
     try {
       const response = await api.post("/api/admin/login", adminData);
       const { token } = response.data;
-      console.log("token:" , token)
+      // console.log("token:" , token)
     //   localStorage.setItem("adminToken", token);
 
 

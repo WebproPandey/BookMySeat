@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchBuses } from "../../redux/actions/busAction";
-import { Link } from "react-router-dom";
+import { deleteBus, fetchBuses } from "../../redux/actions/busAction";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function AllBuses() {
   const dispatch = useDispatch();
@@ -42,10 +42,27 @@ export default function AllBuses() {
     </div>
   );
 }
+
+
 function BusCard({ bus }) {
+  const dispatch = useDispatch();
+  const navigate = useNavigate(); 
+
+  const handleDelete = () => {
+    if (window.confirm("Are you sure you want to delete this bus?")) {
+      dispatch(deleteBus(bus._id, 
+        () => alert("Bus deleted successfully"), 
+        (error) => alert(error)
+      ));
+    }
+  };
+
+  const handleEdit = () => {
+    navigate(`/admin/edit-bus/${bus._id}`);
+  };
+
   return (
     <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all overflow-hidden max-w-md mx-auto">
-      {/* Image section */}
       <div className="w-full h-48 overflow-hidden bg-gray-800">
         <img
           src={bus?.busImage}
@@ -83,6 +100,22 @@ function BusCard({ bus }) {
             {bus?.pricePerKm?.deluxe && <span>Deluxe: ₹{bus.pricePerKm.deluxe}</span>}
             {bus?.pricePerKm?.nonDeluxe && <span>Non-Deluxe: ₹{bus.pricePerKm.nonDeluxe}</span>}
           </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex justify-between mt-4">
+          <button
+            onClick={handleEdit}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Edit
+          </button>
+          <button
+            onClick={handleDelete}
+            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          >
+            Delete
+          </button>
         </div>
       </div>
     </div>
