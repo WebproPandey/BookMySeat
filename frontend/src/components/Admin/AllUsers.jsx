@@ -8,7 +8,6 @@ export default function AllUsers() {
   const navigate = useNavigate();
   const { users, loading } = useSelector((state) => state.user);
 
-//   console.log("users:", users);
 
   useEffect(() => {
     dispatch(fetchUsers());

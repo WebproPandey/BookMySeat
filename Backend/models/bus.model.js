@@ -25,6 +25,10 @@ const busSchema = new mongoose.Schema({
   },
   seats: Number,
   availableSeats: [Number],
+  status: {
+    type: String,
+    default: 'active', 
+  },
   timings: String
 });
 

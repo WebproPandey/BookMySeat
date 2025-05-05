@@ -4,6 +4,8 @@ import busReducer from "./reducers/busReducer";
 import promoReducer from "./reducers/promoReducer";
 import userReducer from "./reducers/userReducer";
 import { revenueReducer } from "./reducers/revenueReducer";
+import { cancelBusBookingsReducer } from "./reducers/cancelBusBookingsReducer";
+import { userAuthReducer } from "./reducers/user/userAuthReducers";
 
 const store = configureStore({
   reducer: {
@@ -12,6 +14,9 @@ const store = configureStore({
     promo: promoReducer,
     user:userReducer,
     revenue: revenueReducer,
+    cancelBusBookings: cancelBusBookingsReducer,
+
+    userAuth:userAuthReducer,
   },
 });
 

@@ -5,7 +5,7 @@ import AdminHome from "./pages/Home";
 import AdminRegister from "./pages/Admin/Register";
 import AdminLogin from "./pages/Admin/Login";
 import AdminDashboard from "./pages/Admin/Dashboard";
-import ProtectedRoute from "./components/Admin/ProtectedRoute";
+import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import AddBus from "./components/Admin/AddBus";
 import AllBuses from "./components/Admin/AllBuses";
 import EditBus from "./components/Admin/EditBus";
@@ -13,79 +13,114 @@ import ManagePromos from "./components/Admin/ManagePromos";
 import AllUsers from "./components/Admin/AllUsers";
 import UserBookingHistory from "./components/Admin/UserBookingHistory";
 import RevenueModal from "./components/Admin/RevenueModal";
+import CancelBusBookings from "./components/Admin/CancelBusBookings";
+
+
+import UserHome from "./pages/UserHome";
+import UserRegister from "./pages/User/Register";
+import UserLogin from "./pages/User/Login";
+import UserDashboard from "./pages/User/Dashboard";
+import UserProtectedRoute from "./components/UserProtectedRoute";
 
 const App = () => {
   return (
     <Router>
       <Routes>
+
+      {/* user Route */}
+
+      <Route path="/user/home" element={<UserHome />}/>
+      <Route path="/user/register" element={<UserRegister />} />
+      <Route path="/user/login" element={<UserLogin />} />
+      <Route path="/user/dashboard" element={
+        <UserProtectedRoute>
+          <UserDashboard/>
+        </UserProtectedRoute>  
+        } />
+
+
+
+
+       {/* Admin route  */}
         <Route path="/" element={<AdminHome />} />
         <Route path="/admin/register" element={<AdminRegister />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route
           path="/admin/dashboard/*"
           element={
-            <ProtectedRoute>
+            <AdminProtectedRoute>
               <AdminDashboard />
-            </ProtectedRoute>
+            </AdminProtectedRoute>
           }
         />
         <Route
           path="/admin/add-bus"
           element={
-            <ProtectedRoute>
+            <AdminProtectedRoute>
               <AddBus />
-            </ProtectedRoute>
+            </AdminProtectedRoute>
           }
         />
         <Route
           path="/admin/buses"
           element={
-            <ProtectedRoute>
+            <AdminProtectedRoute>
               <AllBuses />
-            </ProtectedRoute>
+            </AdminProtectedRoute>
           }
         />
         <Route
           path="/admin/edit-bus/:id"
           element={
-            <ProtectedRoute>
+            <AdminProtectedRoute>
               <EditBus />
-            </ProtectedRoute>
+            </AdminProtectedRoute>
           }
         />
         <Route
           path="/admin/promos"
           element={
-            <ProtectedRoute>
+            <AdminProtectedRoute>
               <ManagePromos />
-            </ProtectedRoute>
+            </AdminProtectedRoute>
           }
         />
 
         <Route
           path="/admin/users"
           element={
-            <ProtectedRoute>
+            <AdminProtectedRoute>
               <AllUsers />
-            </ProtectedRoute>
+            </AdminProtectedRoute>
           }
         />
         <Route
           path="/admin/user/:id/bookings"
           element={
-            <ProtectedRoute>
+            <AdminProtectedRoute>
               <UserBookingHistory />
-            </ProtectedRoute>
+            </AdminProtectedRoute>
           }
         />
-          <Route
+        <Route
           path="/admin/revenue"
           element={
-            <ProtectedRoute>
-              <RevenueModal/>
-            </ProtectedRoute>
+            <AdminProtectedRoute>
+              <RevenueModal />
+            </AdminProtectedRoute>
           }
         />
+
+        <Route
+          path="/admin/cancel-bus-bookings"
+          element={
+            <AdminProtectedRoute>
+              <CancelBusBookings/>
+            </AdminProtectedRoute>
+          }
+        />
+ 
+       
       </Routes>
       <ToastContainer />
     </Router>

@@ -16,7 +16,7 @@ export const fetchRevenueStats = () => async (dispatch) => {
     console.log('API Response:', response.data);
     dispatch({
       type: FETCH_REVENUE_SUCCESS,
-      payload: response.data.revenueStats,
+      payload: response.data,
     });
   } catch (error) {
     console.error('Error fetching revenue statistics:', error);

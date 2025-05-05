@@ -2,10 +2,11 @@
 
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Bus, Users, Percent, BarChart3 } from 'lucide-react';
+import { Bus, Users, Percent, BarChart3, DeleteIcon } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { logoutAdmin } from '../../redux/actions/adminAuthActions';
 import AllBuses from './AllBuses';
+
     
 
 export default function Dashboard() {
@@ -16,6 +17,8 @@ export default function Dashboard() {
   const handleLogout = () => {
     dispatch(logoutAdmin(navigate));
   };
+
+
 
   return (
     <div className="min-h-screen bg-gray-100 p-6 relative">
@@ -43,6 +46,7 @@ export default function Dashboard() {
             icon={<BarChart3 className="w-8 h-8 text-orange-500" />}
             link="/admin/revenue"
           />
+         
           <div className="mt-10 text-center">
           <Link 
              onClick={handleLogout}

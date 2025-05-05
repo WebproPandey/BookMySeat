@@ -2,12 +2,14 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteBus, fetchBuses } from "../../redux/actions/busAction";
 import { Link, useNavigate } from "react-router-dom";
+import { handleConfirm, handleError, handleSuccess } from "../../utils/toast";
+import { cancelBusBookings } from "../../redux/actions/cancelBusBookings";
 
 export default function AllBuses() {
   const dispatch = useDispatch();
   const { buses, loading, error } = useSelector((state) => state.bus);
 
-  console.log("Buses:", buses);
+  // console.log("Buses:", buses);
 
   useEffect(() => {
     dispatch(fetchBuses());
@@ -49,16 +51,30 @@ function BusCard({ bus }) {
   const navigate = useNavigate(); 
 
   const handleDelete = () => {
-    if (window.confirm("Are you sure you want to delete this bus?")) {
-      dispatch(deleteBus(bus._id, 
-        () => alert("Bus deleted successfully"), 
-        (error) => alert(error)
-      ));
-    }
+    handleConfirm("Are you sure you want to delete this bus?", () => {
+      dispatch(
+        deleteBus(
+          bus._id,
+          () => handleSuccess("Bus deleted successfully!"),
+          (error) => handleError(error)
+        )
+      );
+    });
   };
-
   const handleEdit = () => {
     navigate(`/admin/edit-bus/${bus._id}`);
+  };
+
+  const handleCancelBookings = () => {
+    handleConfirm("Are you sure you want to cancel this bus and its bookings?", () => {
+      dispatch(
+        cancelBusBookings(
+          bus._id,
+          (message) => handleSuccess(message), 
+          (error) => handleError(error.response?.data?.message || "Failed to cancel bookings.")
+        )
+      );
+    });
   };
 
   return (
@@ -109,6 +125,12 @@ function BusCard({ bus }) {
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
             Edit
+          </button>
+          <button
+            onClick={handleCancelBookings}
+            className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+          >
+            Cancel Bookings
           </button>
           <button
             onClick={handleDelete}
