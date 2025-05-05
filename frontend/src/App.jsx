@@ -21,6 +21,8 @@ import UserRegister from "./pages/User/Register";
 import UserLogin from "./pages/User/Login";
 import UserDashboard from "./pages/User/Dashboard";
 import UserProtectedRoute from "./components/UserProtectedRoute";
+import AvailableBuses from "./components/User/AvailableBuses";
+import MyTicket from "./components/User/MyTicket";
 
 const App = () => {
   return (
@@ -36,7 +38,10 @@ const App = () => {
         <UserProtectedRoute>
           <UserDashboard/>
         </UserProtectedRoute>  
-        } />
+        }>
+          <Route path="available-buses" element={<AvailableBuses/>} />
+          <Route path="my-tickets" element={<MyTicket/>} />
+      </Route>
 
 
 

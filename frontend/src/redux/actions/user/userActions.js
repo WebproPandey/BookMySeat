@@ -7,6 +7,9 @@ import {
   USER_LOGIN_SUCCESS,
   USER_LOGIN_FAIL,
   USER_LOGOUT,
+  FETCH_USERSBUS_REQUEST,
+  FETCH_USERSBUS_SUCCESS,
+  FETCH_USERSBUS_FAIL,
 } from "../../actionTypes/userActionTypes";
 
 export const registerUser = (userData ,navigate, showError) => async (dispatch) => {
@@ -33,14 +36,14 @@ export const registerUser = (userData ,navigate, showError) => async (dispatch) 
 
 export const loginUser = (loginData , navigate ,showError) => {
   return async (dispatch) => {
-    dispatch({ type:  USER_REGISTER_REQUEST });
+    dispatch({ type:  USER_LOGIN_REQUEST });
     try {
       const response = await api.post("/api/user/login", loginData);
       const { token } = response.data;
       
       localStorage.setItem("userToken", token);
       dispatch({
-        type:  USER_REGISTER_SUCCESS,
+        type: USER_LOGIN_SUCCESS,
         payload: { token },
       });
       navigate("/user/dashboard");
@@ -51,7 +54,7 @@ export const loginUser = (loginData , navigate ,showError) => {
             navigate("/user/login");
           }
       dispatch({
-        type:  USER_REGISTER_FAIL,
+        type:USER_LOGIN_FAIL,
         payload: message,
       });
     }
@@ -64,3 +67,27 @@ export const logoutUser = (navigate) => (dispatch) => {
   navigate("/user/login");
 
 };
+
+export const fetchBusUser = (navigate) => async (dispatch) => {
+  dispatch({ type: FETCH_USERSBUS_REQUEST });
+  try {
+    const token = localStorage.getItem("userToken");
+    const response = await api.get("/api/user/available-buses", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log("Available buses fetched successfully:", response.data);
+    dispatch({ type: FETCH_USERSBUS_SUCCESS, payload: response.data });
+    
+  } catch (error) {
+    console.error("Error fetching available buses:", error.message);
+    dispatch({
+      type: FETCH_USERSBUS_FAIL,
+      payload: error.response?.data?.error || "Failed to fetch buses",
+    });
+    
+  }
+
+};
+

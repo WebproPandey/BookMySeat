@@ -6,6 +6,7 @@ import userReducer from "./reducers/userReducer";
 import { revenueReducer } from "./reducers/revenueReducer";
 import { cancelBusBookingsReducer } from "./reducers/cancelBusBookingsReducer";
 import { userAuthReducer } from "./reducers/user/userAuthReducers";
+import userBusReducer from "./reducers/user/userBusReducer";
 
 const store = configureStore({
   reducer: {
@@ -17,6 +18,7 @@ const store = configureStore({
     cancelBusBookings: cancelBusBookingsReducer,
 
     userAuth:userAuthReducer,
+    userBus:userBusReducer
   },
 });
 

@@ -6,7 +6,7 @@ const userAuth = require('../middlewares/authMiddleware');
 
 router.post('/register', registerUser);
 router.post('/login', loginUser);
-router.get('/tickets/available-buses', getAvailableBuses);    
+router.get('/available-buses', getAvailableBuses);    
 router.post('/tickets/book',userAuth, bookTicket);                      
 router.get('/tickets/pdf/:ticketId',userAuth, getTicketPDF); 
 router.get('/my-tickets', userAuth, getMyTickets);
