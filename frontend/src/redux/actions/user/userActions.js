@@ -22,6 +22,15 @@ import {
   FETCH_TICKET_REQUEST,
   FETCH_TICKET_SUCCESS,
   FETCH_TICKET_FAIL,
+  CANCEL_TICKET_REQUEST,
+  CANCEL_TICKET_SUCCESS,
+  CANCEL_TICKET_FAIL,
+  DELETE_TICKET_REQUEST,
+  DELETE_TICKET_SUCCESS,
+  DELETE_TICKET_FAIL,
+  DOWNLOAD_TICKET_REQUEST,
+  DOWNLOAD_TICKET_SUCCESS,
+  DOWNLOAD_TICKET_FAIL,
 } from "../../actionTypes/userActionTypes";
 
 export const registerUser = (userData ,navigate, showError) => async (dispatch) => {
@@ -190,3 +199,74 @@ export const fetchTickets = () => async (dispatch) => {
   }
 };
 
+export const cancelTicket = (ticketId) => async (dispatch) => {
+  dispatch({ type: CANCEL_TICKET_REQUEST });
+  try {
+    const token = localStorage.getItem("userToken");
+    const response = await api.patch(`/api/user/tickets/cancel/${ticketId}`, {}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log("Ticket canceled successfully:", response.data);
+    dispatch({ type: CANCEL_TICKET_SUCCESS, payload: response.data });
+    return response.data;
+  } catch (error) {
+    console.error("Error canceling ticket:", error);
+    dispatch({
+      type: CANCEL_TICKET_FAIL,
+      payload: error.response?.data?.error || "Failed to cancel ticket",
+    });
+    throw error;
+  }
+};
+
+// Delete Ticket
+export const deleteTicket = (ticketId) => async (dispatch) => {
+  dispatch({ type: DELETE_TICKET_REQUEST });
+  try {
+    const token = localStorage.getItem("userToken");
+    const response = await api.delete(`/api/user/tickets/delete/${ticketId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    dispatch({ type: DELETE_TICKET_SUCCESS, payload: response.data });
+    return response.data;
+  } catch (error) {
+    dispatch({
+      type: DELETE_TICKET_FAIL,
+      payload: error.response?.data?.error || "Failed to delete ticket",
+    });
+    throw error;
+  }
+};
+
+export const downloadTicketPDF = (ticketId) => async (dispatch) => {
+  dispatch({ type: DOWNLOAD_TICKET_REQUEST });
+  try {
+    const token = localStorage.getItem("userToken");
+    const response = await api.get(`/api/user/tickets/pdf/${ticketId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      responseType: "blob", // Important for downloading files
+    });
+
+    // Create a URL for the PDF and trigger download
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `ticket-${ticketId}.pdf`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    dispatch({ type: DOWNLOAD_TICKET_SUCCESS, payload: response.data });
+  } catch (error) {
+    dispatch({
+      type: DOWNLOAD_TICKET_FAIL,
+      payload: error.response?.data?.error || "Failed to download ticket PDF",
+    });
+  }
+};

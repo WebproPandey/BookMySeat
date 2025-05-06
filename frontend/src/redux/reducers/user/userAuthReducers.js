@@ -14,7 +14,6 @@ import {
     error: null,
   };
   
-  // User Registration Reducer
   export const userAuthReducer = (state = initialState, action) => {
     switch (action.type) {
       case USER_REGISTER_REQUEST:

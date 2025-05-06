@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchTickets } from "../../redux/actions/user/userActions";
+import { cancelTicket, deleteTicket, downloadTicketPDF, fetchTickets } from "../../redux/actions/user/userActions";
 
 const MyTicket = () => {
   const dispatch = useDispatch();
-  const { tickets, loading, error } = useSelector((state) => state.userTicket);
+  const { tickets, loading, error ,downloading} = useSelector((state) => state.userTicket);
 
   useEffect(() => {
     dispatch(fetchTickets());
@@ -12,6 +12,34 @@ const MyTicket = () => {
 
   if (loading) return <p className="text-center text-blue-500">Loading...</p>;
   if (error) return <p className="text-center text-red-500">Error: {error}</p>;
+
+  const handleDownloadPDF = async (ticketId) => {
+    try {
+      await dispatch(downloadTicketPDF(ticketId));
+      alert("Ticket PDF downloaded successfully");
+    } catch (error) {
+      alert("Failed to download ticket PDF");
+    }
+  };
+
+  const handleCancelTicket = async (ticketId) => {
+    try {
+      await dispatch(cancelTicket(ticketId));
+      alert('Ticket canceled successfully');
+    } catch (error) {
+      console.error('Error canceling ticket:', error);
+      alert(error.response?.data?.error || 'Failed to cancel ticket');
+    }
+  };
+
+  const handleDeleteTicket = async (ticketId) => {
+    try {
+      await dispatch(deleteTicket(ticketId));
+      alert("Ticket deleted successfully");
+    } catch (error) {
+      alert("Failed to delete ticket");
+    }
+  };
 
   // Defensive check
   const allTickets = Array.isArray(tickets?.tickets) ? tickets.tickets : [];
@@ -72,6 +100,29 @@ const MyTicket = () => {
                   className="w-24 h-24 mx-auto"
                 />
                 <p className="text-xs text-gray-400 mt-1">Ticket ID: {ticket.ticketId}</p>
+                <div className="flex space-x-4">
+                  <button
+                    onClick={() => handleDownloadPDF(ticket.ticketId)}
+                    className="text-blue-500 hover:underline"
+                    disabled={downloading}
+                  >
+                    {downloading ? "Downloading..." : "Download PDF"}
+                  </button>
+                  {ticket.status !== "canceled" && (
+                    <button
+                      onClick={() => handleCancelTicket(ticket.ticketId)}
+                      className="text-red-500 hover:underline"
+                    >
+                      Cancel Ticket
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleDeleteTicket(ticket.ticketId)}
+                    className="text-gray-500 hover:underline"
+                  >
+                    Delete Ticket
+                  </button>
+                </div>
               </div>
             </div>
           ))}
