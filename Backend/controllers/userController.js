@@ -3,6 +3,9 @@ const PromoCode = require('../models/promoCode.modle');
 const Bus = require('../models/bus.model');
 const Ticket = require('../models/ticket.model');
 const PDFDocument = require('pdfkit');
+const Razorpay = require("razorpay");
+const crypto = require("crypto");
+
 
 exports.registerUser = async (req, res) => {
   try {
@@ -51,28 +54,39 @@ exports.getAllPromos = async (req, res) => {
   res.json(promos);
 };
 
+
 exports.bookTicket = async (req, res) => {
   try {
     const userId = req.user.userId;
     if (!userId) {
-      return res.status(400).json({ error: "User not authenticated" }); 
+      return res.status(400).json({ error: "User not authenticated" });
     }
 
-    const { busId, seats, couponCode } = req.body;
+    const { busId, seats, couponCode, razorpayPaymentId, razorpayOrderId, razorpaySignature } = req.body;
 
     if (!busId || !seats || seats.length === 0) {
       return res.status(400).json({ error: "Bus ID and seat(s) are required" });
     }
 
+    // Verify Razorpay Payment
+    const generatedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(`${razorpayOrderId}|${razorpayPaymentId}`)
+      .digest("hex");
+
+    if (generatedSignature !== razorpaySignature) {
+      return res.status(400).json({ error: "Invalid payment signature" });
+    }
+
+    // Call the service to handle ticket booking logic
     const ticket = await userService.bookTicket({ busId, seats, couponCode, userId });
 
-    res.status(201).json(ticket);
+    res.status(201).json({ message: "Ticket booked successfully", ticket });
   } catch (err) {
-    console.log("BookTicket:", err.message);
+    console.error("BookTicket:", err.message);
     res.status(500).json({ error: err.message || "An error occurred while booking the ticket" });
   }
 };
-
 
 exports.getMyTickets = async (req, res) => {
   try {

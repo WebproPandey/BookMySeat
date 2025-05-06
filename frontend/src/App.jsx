@@ -23,6 +23,7 @@ import UserDashboard from "./pages/User/Dashboard";
 import UserProtectedRoute from "./components/UserProtectedRoute";
 import AvailableBuses from "./components/User/AvailableBuses";
 import MyTicket from "./components/User/MyTicket";
+import AvailablePromo from "./components/User/AvailablePromo";
 
 const App = () => {
   return (
@@ -41,6 +42,7 @@ const App = () => {
         }>
           <Route path="available-buses" element={<AvailableBuses/>} />
           <Route path="my-tickets" element={<MyTicket/>} />
+          <Route path="promos" element={<AvailablePromo/>} />
       </Route>
 
 

@@ -14,7 +14,7 @@ exports.uploadBufferToCloudinary = (buffer) => {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream((error, result) => {
       if (error) {
-        console.error("Cloudinary Upload Error:", error); // Log the error
+        console.error("Cloudinary Upload Error:", error); 
         return reject(error);
       }
       resolve(result);

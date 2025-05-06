@@ -1,17 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const { registerUser, loginUser, getAvailableBuses, getTicketPDF, bookTicket, getAllPromos, getMyTickets, cancelTicket, deleteTicket } = require('../controllers/userController');
-const userAuth = require('../middlewares/authMiddleware');
+const { createOrder } = require('../controllers/paymentController');
+const authMiddleware = require('../middlewares/authMiddleware');
 
 
 router.post('/register', registerUser);
 router.post('/login', loginUser);
-router.get('/available-buses', getAvailableBuses);    
-router.post('/tickets/book',userAuth, bookTicket);                      
-router.get('/tickets/pdf/:ticketId',userAuth, getTicketPDF); 
-router.get('/my-tickets', userAuth, getMyTickets);
-router.patch('/tickets/cancel/:ticketId', userAuth, cancelTicket);
-router.delete('/tickets/delete/:ticketId', userAuth, deleteTicket);
-router.get('/promos', getAllPromos); 
+router.get('/available-buses', authMiddleware ,getAvailableBuses);  
+
+// Razorpay order creation
+
+router.post("/payment/create-order", authMiddleware, createOrder); 
+router.post("/tickets/book", authMiddleware, bookTicket);
+            
+router.get('/tickets/pdf/:ticketId',authMiddleware, getTicketPDF); 
+router.get('/my-tickets', authMiddleware, getMyTickets);
+router.patch('/tickets/cancel/:ticketId', authMiddleware, cancelTicket);
+router.delete('/tickets/delete/:ticketId', authMiddleware, deleteTicket);
+
+router.get('/promos',authMiddleware ,getAllPromos); 
 
 module.exports = router;
