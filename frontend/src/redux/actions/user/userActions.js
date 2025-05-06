@@ -19,6 +19,9 @@ import {
   BOOK_TICKET_REQUEST,
   BOOK_TICKET_SUCCESS,
   BOOK_TICKET_FAIL,
+  FETCH_TICKET_REQUEST,
+  FETCH_TICKET_SUCCESS,
+  FETCH_TICKET_FAIL,
 } from "../../actionTypes/userActionTypes";
 
 export const registerUser = (userData ,navigate, showError) => async (dispatch) => {
@@ -148,12 +151,13 @@ export const bookTicket = (ticketData) => async (dispatch) => {
   dispatch({ type: BOOK_TICKET_REQUEST });
   try {
     const token = localStorage.getItem("userToken");
-    const response = await api.post("/api/tickets/book", ticketData, {
+    const response = await api.post("/api/user/tickets/book", ticketData, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
     dispatch({ type: BOOK_TICKET_SUCCESS, payload: response.data });
+    console.log("Ticket booked successfully:", response.data);
     return response.data; // Return ticket details
   } catch (error) {
     console.error("Error booking ticket:", error.message);
@@ -162,6 +166,27 @@ export const bookTicket = (ticketData) => async (dispatch) => {
       payload: error.response?.data?.error || "Failed to book ticket",
     });
     throw error;
+  }
+};
+
+
+export const fetchTickets = () => async (dispatch) => {
+  dispatch({ type: FETCH_TICKET_REQUEST });
+  try {
+    const token = localStorage.getItem("userToken");
+    const response = await api.get("/api/user/my-tickets", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log("Tickets fetched successfully:", response.data);
+    dispatch({ type: FETCH_TICKET_SUCCESS, payload: response.data });
+  } catch (error) {
+    console.error("Error fetching tickets:", error.message);
+    dispatch({
+      type: FETCH_TICKET_FAIL,
+      payload: error.response?.data?.error || "Failed to fetch tickets",
+    });
   }
 };
 

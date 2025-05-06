@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBusUser, createOrder, bookTicket } from "../../redux/actions/user/userActions";
+import axios from "axios";
+import api from "../../services/api";
 
 const AvailableBuses = () => {
   const dispatch = useDispatch();
@@ -11,7 +13,7 @@ const AvailableBuses = () => {
   // Getting logged-in user info
   const { userInfo } = useSelector((state) => state.userAuth);
 
-  const [promoCode, setPromoCode] = useState("");
+  const [promoCodes, setPromoCodes] = useState({});
   const [selectedSeats, setSelectedSeats] = useState({}); // State for selected seats per bus
 
   useEffect(() => {
@@ -30,7 +32,7 @@ const AvailableBuses = () => {
     else if (busType === "Deluxe") price = distance * pricePerKm.deluxe;
     else if (busType === "Non-Deluxe") price = distance * pricePerKm.nonDeluxe;
 
-    return price.toFixed(2);
+    return price.toFixed();
   };
 
   const handleSeatSelection = (busId, seat) => {
@@ -46,23 +48,38 @@ const AvailableBuses = () => {
     });
   };
 
+  const handlePromoCodeChange = (busId, code) => {
+    setPromoCodes((prev) => ({
+      ...prev,
+      [busId]: code,
+    }));
+  };
+
   const handleBookTicket = async (bus) => {
     try {
       const busSelectedSeats = selectedSeats[bus._id] || [];
       const baseAmount = calculatePrice(bus) * busSelectedSeats.length;
 
-      // Apply promo code
+      // Apply promo code   
+       const promoCode = promoCodes[bus._id];
+
       let discountedAmount = baseAmount;
       if (promoCode) {
-        const promoResponse = await fetch(`/api/user/promos?code=${promoCode}`);
-        const promo = await promoResponse.json();
+          const token = localStorage.getItem("userToken");
+          const promoResponse = await api.get(`/api/user/promos?code=${promoCodes}`,{
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+        );
+        const promo = await promoResponse.data
         if (promo && promo.discountPercent) {
           discountedAmount -= (baseAmount * promo.discountPercent) / 100;
         }
       }
 
       // Convert amount to paise (Razorpay expects amount in paise)
-      const amountInPaise = Math.round(discountedAmount * 100);
+      const amountInPaise = Math.round(discountedAmount);
 
       // Create Razorpay Order
       const order = await dispatch(createOrder(amountInPaise));
@@ -88,9 +105,10 @@ const AvailableBuses = () => {
             })
           );
           alert("Ticket booked successfully!");
+          
         },
         prefill: {
-          name: userInfo?.name || "sonu@s",
+          name: userInfo?.name || "",
           email: userInfo?.email || "",
           contact: userInfo?.phone || "",
         },
@@ -108,7 +126,7 @@ const AvailableBuses = () => {
       const razorpay = new window.Razorpay(options);
       razorpay.open();
     } catch (error) {
-      console.error("Error booking ticket:", error.message);
+      console.error("Error booking ticket:", error);
       alert("Failed to book ticket. Please try again.");
     }
   };
@@ -158,8 +176,8 @@ const AvailableBuses = () => {
           <input
             type="text"
             placeholder="Enter Promo Code"
-            value={promoCode}
-            onChange={(e) => setPromoCode(e.target.value)}
+            value={promoCodes[bus._id] || ""} // Promo code for the specific bus
+            onChange={(e) => handlePromoCodeChange(bus._id, e.target.value)}
             className="border p-2 rounded w-full mt-2"
           />
 

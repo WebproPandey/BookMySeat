@@ -14,8 +14,9 @@ router.get('/available-buses', authMiddleware ,getAvailableBuses);
 router.post("/payment/create-order", authMiddleware, createOrder); 
 router.post("/tickets/book", authMiddleware, bookTicket);
             
-router.get('/tickets/pdf/:ticketId',authMiddleware, getTicketPDF); 
 router.get('/my-tickets', authMiddleware, getMyTickets);
+
+router.get('/tickets/pdf/:ticketId',authMiddleware, getTicketPDF); 
 router.patch('/tickets/cancel/:ticketId', authMiddleware, cancelTicket);
 router.delete('/tickets/delete/:ticketId', authMiddleware, deleteTicket);
 

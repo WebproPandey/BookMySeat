@@ -54,7 +54,6 @@ exports.getAllPromos = async (req, res) => {
   res.json(promos);
 };
 
-
 exports.bookTicket = async (req, res) => {
   try {
     const userId = req.user.userId;

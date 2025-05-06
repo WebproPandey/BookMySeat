@@ -9,7 +9,7 @@ import { userAuthReducer } from "./reducers/user/userAuthReducers";
 import userBusReducer from "./reducers/user/userBusReducer";
 import userPromoReducer from "./reducers/user/userPromoReducer";
 import userPaymentReducer from "./reducers/user/userPaymentReducer";
-import userTicketReducer from "./reducers/user/userTicketReducer.js";
+import { userTicketReducer } from "./reducers/user/userTicketReducer";
 
 const store = configureStore({
   reducer: {
