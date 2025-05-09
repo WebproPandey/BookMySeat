@@ -8,34 +8,35 @@ const { v4: uuidv4 } = require('uuid');
 const qrcode = require('qrcode');
 
 exports.registerUser = async ({ name, email, phone, password }) => {
-    try {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const user = new User({ name, email, phone, password: hashedPassword });
-      await user.save();
-      const token = jwt.sign(
-        { userId: user._id, role: user.role },
-        process.env.JWT_SECRET,
-        { expiresIn: '1d' }
-      );
-      return { message: 'User registered successfully', token };
-    } catch (err) {
-      console.error("Error in userService.registerUser:", err.message);
-      throw new Error("User registration failed");
-    }
-  };
-  
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const user = new User({
+    name,
+    email,
+    phone,
+    password: hashedPassword,
+    role: "user",
+    walletBalance: 0, // Default wallet balance
+  });
+  return await user.save();
+};
 
 exports.loginUser = async ({ email, password }) => {
-  const user = await User.findOne({ email ,role: 'user' });
-  if (!user) throw new Error('User not found');
+  const user = await User.findOne({ email, role: "user" });
+  if (!user) throw new Error("User not found");
+
   const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) throw new Error('Invalid credentials');
+  if (!isMatch) throw new Error("Invalid credentials");
+
   const token = jwt.sign(
-    { userId: user._id, role: 'user' },
+    { userId: user._id, role: user.role },
     process.env.JWT_SECRET,
-    { expiresIn: '1d' }
+    { expiresIn: "1d" }
   );
-  return { token };
+
+  return { user, token };
+};
+exports.getUserById = async (userId) => {
+  return await User.findById(userId)
 };
 
 exports.getUserByEmail = async (email) => {

@@ -10,7 +10,7 @@ import {
   
   const initialState = {
     loading: false,
-    userInfo: null,
+    user: null,
     error: null,
   };
   
@@ -21,7 +21,7 @@ import {
         return { ...state, loading: true, error: null };
       case USER_REGISTER_SUCCESS:
       case USER_LOGIN_SUCCESS:
-        return { ...state, loading: false, userInfo: action.payload };
+        return { ...state, loading: false, user: action.payload };
       case USER_REGISTER_FAIL:
       case USER_LOGIN_FAIL:
         return { ...state, loading: false, error: action.payload };

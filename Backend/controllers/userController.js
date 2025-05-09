@@ -10,31 +10,86 @@ const crypto = require("crypto");
 exports.registerUser = async (req, res) => {
   try {
     const { name, email, phone, password } = req.body;
+
+    // Check if user already exists
     const existingUser = await userService.getUserByEmail(email);
     if (existingUser) {
-      return res.status(400).json({ error: 'Email already registered' });
+      return res.status(400).json({ error: "Email already registered" });
     }
-    const result = await userService.registerUser({ name, email, phone, password });
-    res.status(201).json(result);
+
+    // Create user
+    const user = await userService.registerUser({ name, email, phone, password });
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    res.status(201).json({
+      message: "User registered successfully",
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        walletBalance: user.walletBalance || 0,
+      },
+    });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error("Register Error:", error.message);
+    res.status(500).json({ error: "Registration failed" });
   }
 };
 
 exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const result = await userService.loginUser({ email, password });
-    res.cookie('token', result.token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'Lax',
+
+    const { user, token } = await userService.loginUser({ email, password });
+
+    // Send token in cookie (optional)
+    // res.cookie("token", token, {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production",
+    //   sameSite: "Lax",
+    // });
+
+    res.status(200).json({
+      message: "Login successful",
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        walletBalance: user.walletBalance || 0,
+      },
     });
-    res.status(200).json({ message: 'Login successful', token: result.token });
+  } catch (error) {
+    console.error("Login Error:", error.message);
+    res.status(401).json({ error: error.message || "Login failed" });
+  }
+};
+
+exports.getUserProfile = async (req, res) => {
+  try {
+    const userId = req.user.userId || req.user._id;  
+    if (!userId) {
+      return res.status(400).json({ error: "User not authenticated" });
+    }
+    const user = await userService.getUserById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-};
+  
+}
 
 
 
@@ -110,6 +165,34 @@ exports.getMyTickets = async (req, res) => {
   }
 };
 
+exports.validatePromoCode = async (req, res) => {
+  try {
+    const { code } = req.query;
+
+    if (!code) {
+      return res.status(400).json({ error: "Promo code is required" });
+    }
+    const promo = await PromoCode.findOne({ code: code.toUpperCase() });
+    if (!promo) {
+      return res.status(400).json({ error: "Promo code does not exist" });
+    }
+    const currentDate = new Date();
+    if (new Date(promo.expiryDate) < currentDate) {
+      return res.status(400).json({ error: "Promo code has expired" });
+    }
+    if (promo.usedCount >= promo.usageLimit) {
+      return res.status(400).json({ error: "Promo code usage limit reached" });
+    }
+    res.status(200).json({
+      discountPercent: promo.discountPercent,
+      message: "Promo code is valid",
+    });
+
+  } catch (err) {
+    console.error("ValidatePromoCode:", err.message);
+    res.status(500).json({ error: "Unable to validate promo code" });
+  }
+};
 
 
 exports.getTicketPDF = async (req, res) => {
@@ -135,6 +218,13 @@ exports.getTicketPDF = async (req, res) => {
     doc.text(`Bus Type: ${ticket.busId.busType}`);
     doc.text(`Total Fare: ₹${ticket.totalFare}`);
     doc.text(`Date & Time: ${ticket.bookingTime.toLocaleString()}`);
+    doc.moveDown();
+
+    if (ticket.qrCodeUrl) {
+      const qrImageBuffer = Buffer.from(ticket.qrCodeUrl.split(",")[1], "base64");
+      doc.image(qrImageBuffer, { fit: [150, 150], align: 'center' });
+    }
+
     doc.end();
 
   } catch (err) {
@@ -193,14 +283,13 @@ exports.cancelTicket = async (req, res) => {
   }
 };
 
-
-
 exports.deleteTicket = async (req, res) => {
   try {
     const { ticketId } = req.params;
     const userId = req.user.userId || req.user._id;
 
     const ticket = await Ticket.findOne({ ticketId });
+    console.log("ticekts:" ,ticket )
 
     if (!ticket) {
       return res.status(404).json({ error: 'Ticket not found' });
@@ -210,31 +299,30 @@ exports.deleteTicket = async (req, res) => {
       return res.status(403).json({ error: 'Unauthorized to delete this ticket' });
     }
 
-    // Seats ko wapas availableSeats me daalna (only if not present)
+    // Find the bus and update availableSeats
     const bus = await Bus.findById(ticket.busId);
     if (bus) {
       ticket.seatsBooked.forEach((seat) => {
         if (!bus.availableSeats.includes(seat)) {
-          bus.availableSeats.push(seat);
+          bus.availableSeats.push(seat); // Re-add the seat to availableSeats
         }
       });
 
-      // Seats ko sort karo ascending order me
+      // Sort the availableSeats array in ascending order
       bus.availableSeats.sort((a, b) => a - b);
 
-      await bus.save();
+      await bus.save(); // Save the updated bus
     }
 
+    // Delete the ticket
     await Ticket.deleteOne({ _id: ticket._id });
 
-    res.status(200).json({ message: 'Ticket deleted permanently' });
+    res.status(200).json({ message: 'Ticket deleted permanently and seats updated' });
 
   } catch (err) {
     console.error('deleteTicket:', err.message);
     res.status(500).json({ error: 'Unable to delete ticket' });
   }
 };
-
-
 
 

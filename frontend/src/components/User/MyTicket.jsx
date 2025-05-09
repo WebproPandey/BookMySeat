@@ -1,9 +1,14 @@
 import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { cancelTicket, deleteTicket, downloadTicketPDF, fetchTickets } from "../../redux/actions/user/userActions";
+import { useDispatch, useSelector} from "react-redux";
+import { useNavigate } from "react-router-dom"; 
+import { toast } from "react-toastify";
+
+import { cancelTicket, deleteTicket, downloadTicketPDF, fetchBusUser, fetchTickets } from "../../redux/actions/user/userActions";
 
 const MyTicket = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate(); 
+
   const { tickets, loading, error ,downloading} = useSelector((state) => state.userTicket);
 
   useEffect(() => {
@@ -16,28 +21,33 @@ const MyTicket = () => {
   const handleDownloadPDF = async (ticketId) => {
     try {
       await dispatch(downloadTicketPDF(ticketId));
-      alert("Ticket PDF downloaded successfully");
+      toast.success("Ticket PDF downloaded successfully!");
+
     } catch (error) {
-      alert("Failed to download ticket PDF");
+      toast.error("Failed to download ticket PDF");
     }
   };
 
   const handleCancelTicket = async (ticketId) => {
     try {
       await dispatch(cancelTicket(ticketId));
-      alert('Ticket canceled successfully');
+      toast.success('Ticket canceled successfully');
+      navigate("/user/dashboard"); 
     } catch (error) {
       console.error('Error canceling ticket:', error);
-      alert(error.response?.data?.error || 'Failed to cancel ticket');
+      toast.error(error.response?.data?.error || 'Failed to cancel ticket');
     }
   };
 
   const handleDeleteTicket = async (ticketId) => {
     try {
       await dispatch(deleteTicket(ticketId));
-      alert("Ticket deleted successfully");
+      toast.success("Ticket deleted successfully");
+      dispatch(fetchBusUser());
+      navigate("/user/dashboard"); 
     } catch (error) {
-      alert("Failed to delete ticket");
+      console.error('Error canceling ticket:', error.message);
+      toast.error("Failed to delete ticket");
     }
   };
 

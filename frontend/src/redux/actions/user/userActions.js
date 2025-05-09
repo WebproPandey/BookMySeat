@@ -37,7 +37,11 @@ export const registerUser = (userData ,navigate, showError) => async (dispatch) 
   dispatch({ type: USER_REGISTER_REQUEST });
   try {
     const response = await api.post("/api/user/register", userData);
-    dispatch({ type: USER_REGISTER_SUCCESS, payload: response.data });
+    const { token, user } = response.data;
+    localStorage.setItem("userToken", token);
+
+
+    dispatch({ type: USER_REGISTER_SUCCESS, payload:user });
     navigate("/user/dashboard");
     console.log("User registered successfully:", response.data);
 
@@ -60,12 +64,12 @@ export const loginUser = (loginData , navigate ,showError) => {
     dispatch({ type:  USER_LOGIN_REQUEST });
     try {
       const response = await api.post("/api/user/login", loginData);
-      const { token } = response.data;
+      const { token ,user} = response.data;
       
       localStorage.setItem("userToken", token);
       dispatch({
         type: USER_LOGIN_SUCCESS,
-        payload: { token },
+        payload: user,
       });
       navigate("/user/dashboard");
     } catch (error) {
@@ -88,6 +92,27 @@ export const logoutUser = (navigate) => (dispatch) => {
   navigate("/user/login");
 
 };
+
+export const fetchUserDetails = (navigate) => async (dispatch) => {
+  dispatch({ type: USER_LOGIN_REQUEST });
+  try {
+    const token = localStorage.getItem("userToken");
+    const response = await api.get("/api/user/profile", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    // console.log("User details fetched successfully:", response.data);
+    dispatch({ type: USER_LOGIN_SUCCESS, payload: response.data });
+  } catch (error) {
+    console.error("Error fetching user details:", error.message);
+    dispatch({
+      type: USER_LOGIN_FAIL,
+      payload: error.response?.data?.error || "Failed to fetch user details",
+    });
+  }
+
+}
 
 export const fetchBusUser = (navigate) => async (dispatch) => {
   dispatch({ type: FETCH_USERSBUS_REQUEST });
@@ -116,13 +141,13 @@ export const fetchPromoCode = (navigate) => async (dispatch) => {
   dispatch({ type: FETCH_USERSPROMO_REQUEST });
   try {
     const token = localStorage.getItem("userToken");
-    console.log("Fetching promo code with token:", token);
+    // console.log("Fetching promo code with token:", token);
     const response = await api.get("/api/user/promos", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("Promo details fetched successfully:", response.data);
+    // console.log("Promo details fetched successfully:", response.data);
     dispatch({ type: FETCH_USERSPROMO_SUCCESS, payload: response.data });
   } catch (error) {
     console.error("Error fetching user details:", error.message);
@@ -209,15 +234,17 @@ export const cancelTicket = (ticketId) => async (dispatch) => {
       },
     });
     console.log("Ticket canceled successfully:", response.data);
-    dispatch({ type: CANCEL_TICKET_SUCCESS, payload: response.data });
+    dispatch({ type: CANCEL_TICKET_SUCCESS, payload: { ticketId } });
+    // toast.success("Ticket canceled successfully!");
     return response.data;
   } catch (error) {
     console.error("Error canceling ticket:", error);
     dispatch({
       type: CANCEL_TICKET_FAIL,
-      payload: error.response?.data?.error || "Failed to cancel ticket",
+      payload: error.response?.data?.error || "Failed to cancel tickets ",
     });
-    throw error;
+    // toast.error(error.response?.data?.error || "Failed to cancel ticket");
+    // throw error;
   }
 };
 
@@ -231,14 +258,19 @@ export const deleteTicket = (ticketId) => async (dispatch) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    dispatch({ type: DELETE_TICKET_SUCCESS, payload: response.data });
+    console.log("Ticket deleted successfully:", response.data);
+
+    // Dispatch the ticketId to the reducer
+    dispatch({ type: DELETE_TICKET_SUCCESS, payload: { ticketId } });
+    // toast.success("Ticket deleted successfully!");
     return response.data;
   } catch (error) {
+    console.error("Error deleting ticket:", error.message);
     dispatch({
       type: DELETE_TICKET_FAIL,
       payload: error.response?.data?.error || "Failed to delete ticket",
     });
-    throw error;
+    // toast.error(error.response?.data?.error || "Failed to delete ticket");
   }
 };
 
@@ -250,7 +282,7 @@ export const downloadTicketPDF = (ticketId) => async (dispatch) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      responseType: "blob", // Important for downloading files
+      responseType: "blob",
     });
 
     // Create a URL for the PDF and trigger download

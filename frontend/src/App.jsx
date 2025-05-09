@@ -19,11 +19,15 @@ import CancelBusBookings from "./components/Admin/CancelBusBookings";
 import UserHome from "./pages/UserHome";
 import UserRegister from "./pages/User/Register";
 import UserLogin from "./pages/User/Login";
-import UserDashboard from "./pages/User/Dashboard";
 import UserProtectedRoute from "./components/UserProtectedRoute";
 import AvailableBuses from "./components/User/AvailableBuses";
 import MyTicket from "./components/User/MyTicket";
 import AvailablePromo from "./components/User/AvailablePromo";
+import About from "./components/User/About";
+import Services from "./components/User/Services";
+import UserHomes from "./components/User/UserHome";
+import UserLayout from "./layouts/UserLayout";
+
 
 const App = () => {
   return (
@@ -31,25 +35,52 @@ const App = () => {
       <Routes>
 
       {/* user Route */}
-
-      <Route path="/user/home" element={<UserHome />}/>
+     <Route path="/" element={<UserLayout />}>
+      <Route index element={<UserHome />}/>
       <Route path="/user/register" element={<UserRegister />} />
       <Route path="/user/login" element={<UserLogin />} />
-      <Route path="/user/dashboard" element={
+      <Route path="/user/home" element={
         <UserProtectedRoute>
-          <UserDashboard/>
+          <UserHomes/>
         </UserProtectedRoute>  
-        }>
-          <Route path="available-buses" element={<AvailableBuses/>} />
-          <Route path="my-tickets" element={<MyTicket/>} />
-          <Route path="promos" element={<AvailablePromo/>} />
-      </Route>
+        }/>
+        <Route path="/user/available-buses" element={
+          <UserProtectedRoute>
+            <AvailableBuses/>
+            </UserProtectedRoute>
+          } />
+        <Route path="/user/my-tickets" element={
+          <UserProtectedRoute>
+            <MyTicket/>
+          </UserProtectedRoute>
+          } />
+        <Route path="/user/promos" element={
+          <UserProtectedRoute>
+            <AvailablePromo/>
+          </UserProtectedRoute>
+          } />
+          
+        <Route path="/user/about" element={
+          <UserProtectedRoute>
+            <About/>
+          </UserProtectedRoute>
+          } />
+        <Route path="/user/services" element={
+          <UserProtectedRoute>
+            <Services/>
+          </UserProtectedRoute>
+          } />
+
+     </Route>
+
+
+
 
 
 
 
        {/* Admin route  */}
-        <Route path="/" element={<AdminHome />} />
+        <Route path="/admin/home" element={<AdminHome />} />
         <Route path="/admin/register" element={<AdminRegister />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route
