@@ -39,3 +39,9 @@
   object-fit: cover;
 }
 
+.imagesplash  .image{
+ -webkit-mask-image: url(./assets/spanimg1.png);
+ -webkit-mask-size: contain;
+ object-position: left;
+}
+

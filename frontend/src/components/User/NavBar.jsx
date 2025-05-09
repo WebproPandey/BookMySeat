@@ -34,7 +34,7 @@ const NavBar = () => {
   }
 
   return (
-    <div className="h-[15vh] w-full bg-blue-400/30 flex items-center justify-between px-10 fixed top-0 z-[99]">
+    <div className="h-[15vh] w-full bg-gray-100 flex items-center justify-between px-10 fixed top-0 z-[99]">
       <div className="websitelogo">
         <div className="w-[10vw] flex items-center  justify-center pt-6 ">
           <img src={buslogo} className="h-full  w-full  object-cover" alt="" />
