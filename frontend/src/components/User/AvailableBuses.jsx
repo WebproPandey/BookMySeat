@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 
 const AvailableBuses = () => {
   const dispatch = useDispatch();
+const [activeBusId, setActiveBusId] = useState(null);
 
   // Getting buses data
   const { buses, loading, error } = useSelector((state) => state.userBus);
@@ -48,6 +49,9 @@ const AvailableBuses = () => {
         return { ...prev, [busId]: [...busSeats, seat] };
       }
     });
+     setTimeout(() => {
+      setActiveBusId(null); 
+      }, 300);
   };
 
   const handlePromoCodeChange = async (busId, code) => {
@@ -191,11 +195,18 @@ const AvailableBuses = () => {
       toast.error("Failed to book ticket. Please try again.");
     }
   };
+
+ 
   
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="px-10  py-[20vh]">
+      <div className="">
+        <div className="text-[2.5vw] font-medium">All Buses</div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
       {buses.map((bus) => (
-        <div key={bus._id} className="bg-white rounded-lg shadow-md p-4">
+        <div key={bus._id} className="bg-gray-200 rounded-lg shadow-md p-4 relative overflow-hidden">
           {/* Bus Image */}
           <div className="w-full h-48 overflow-hidden bg-gray-800">
             <img
@@ -206,15 +217,34 @@ const AvailableBuses = () => {
           </div>
 
           {/* Bus Details */}
-          <h2 className="text-xl font-bold">{bus.name}</h2>
-          <p>{bus.route.from} ➝ {bus.route.to}</p>
+          <div className="">
+           <div  className="flex justify-between  items-center">
+            <h2 className="text-xl font-bold">{bus.name}</h2>
+            <h2 className="text-md font-bold">{bus.busType}</h2>
+
+           </div>
+          <div className="flex justify-between  items-center">
+              <p>{bus.route.from} </p>
+           <div className="w-[50%] h-[1px] bg-gray-300"></div>
+             <p>{bus.route.to}</p>
+          </div>
+          <div className="flex justify-between  items-center">
           <p>Distance: {bus.distance} km</p>
           <p>Price per seat: ₹{calculatePrice(bus)}</p>
+          </div>
+          <div className="flex justify-between  items-center">
           <p>Total Seats: {bus.seats}</p>
           <p>Available Seats: {bus.availableSeats.length}</p>
+          </div>
+
+          </div>
+
+           
 
           {/* Seat Selection */}
-          <div className="grid grid-cols-6 gap-2 mt-4">
+          <div className={`w-full h-fit ${activeBusId === bus._id ? "block" : "hidden"}  absolute top-0 left-0 bg-gray-300 drop-shadow-2xl  py-7 pl-10`}>
+
+          <div className="grid grid-cols-4 gap-2 mt-4 ">
             {Array.from({ length: bus.seats }, (_, i) => i + 1).map((seat) => (
               <button
                 key={seat}
@@ -231,7 +261,17 @@ const AvailableBuses = () => {
                 {seat}
               </button>
             ))}
+              <button
+              onClick={() => setActiveBusId(null)}
+              className="absolute top-3 right-3 text-black hover:text-red-500 text-xl"
+            >
+              ×
+            </button>
+            
           </div>
+
+          </div>
+
 
           {/* Promo Code Input */}
           <input
@@ -254,15 +294,26 @@ const AvailableBuses = () => {
             </p>
           )}
 
-          {/* Book Ticket Button */}
-          <button
+          <div className="flex justify-between">
+            <button  onClick={() => setActiveBusId(bus._id)} className=" bg-blue-600  mt-4 text-white px-4 py-2 rounded">
+            Book Seats
+          </button>
+
+           <button
             className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
             onClick={() => handleBookTicket(bus)}
           >
             Book Ticket
           </button>
+
+          </div>
+
+          {/* Book Ticket Button */}
+         
         </div>
       ))}
+      </div>
+
     </div>
   );
 };

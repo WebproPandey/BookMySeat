@@ -42,23 +42,23 @@ const NavBar = () => {
       </div>
 
       <div className="Navlink flex items-center justify-center gap-5">
-        <Link to="/user/home" className="text-black font-medium text-[1.5vw] hover:text-white">
+        <Link to="/user/home" className="text-black font-medium text-[1.5vw] hover:text-black/40">
           Home
         </Link>
-        <Link to="/user/available-buses" className="text-black font-medium text-[1.5vw] hover:text-white">
+        <Link to="/user/available-buses" className="text-black font-medium text-[1.5vw] hover:text-black/40">
           Available Buses
         </Link>
      
-        <Link to="/user/my-tickets" className="text-black font-medium text-[1.5vw] hover:text-white">
+        <Link to="/user/my-tickets" className="text-black font-medium text-[1.5vw] hover:text-black/40">
           My Tickets
         </Link>
-        <Link to="/user/promos" className="text-black font-medium text-[1.5vw] hover:text-white">
+        <Link to="/user/promos" className="text-black font-medium text-[1.5vw] hover:text-black/40">
           Promos
         </Link>
-         <Link to="/user/about" className="text-black font-medium text-[1.5vw] hover:text-white">
+         <Link to="/user/about" className="text-black font-medium text-[1.5vw] hover:text-black/40">
           About
         </Link>
-        <Link to="/user/services" className="text-black font-medium text-[1.5vw] hover:text-white">
+        <Link to="/user/services" className="text-black font-medium text-[1.5vw] hover:text-black/40">
           services
         </Link>
        
