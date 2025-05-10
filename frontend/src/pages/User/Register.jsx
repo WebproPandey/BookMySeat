@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "../../redux/actions/user/userActions";
 import { handleError } from "../../utils/toast";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function UserRegister() {
   const [userData, setuserData] = useState({
@@ -86,6 +86,15 @@ export default function UserRegister() {
           >
             {loading ? "Registering..." : "Register"}
           </button>
+           <div className="text-center mt-4">
+            <p className="text-sm text-gray-600">
+               have an account?{" "}
+              <Link to="/user/login" className="text-blue-500 hover:underline">
+                Login
+              </Link>
+            </p>
+          </div>
+
         </form>
       </div>
     </div>

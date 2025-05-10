@@ -202,33 +202,33 @@ const AvailableBuses = () => {
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
-    <div className="px-10  py-[20vh] relative">
-      <div className="flex justify-between items-end sticky top-[10vh] h-[20vh] z-[9] bg-white">
-         <div className="mb-4 text-[2.5vw] font-medium">All Buses</div>
+    <div className="px-4 md:px-10  py-[20vh] relative w-full">
+      <div className="grid grid-cols-1 pt-[2vh] md:grid-cols-2 w-full bg-white sticky top-[15vh] md:top-[15vh] h-[20vh] md:h-[10vh] z-[9] ]">
+         <div className="mb-4 text-[5vw] md:text-[2.5vw] font-medium">All Buses</div>
 
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <div className="grid grid-cols-4 w-full gap-2 md:gap-4 mb-6">
         <input
           type="text"
           placeholder="From"
-          className="border px-4 py-2 rounded"
+          className="border px-1 py-1  md:px-4 md:py-2 rounded"
           value={filter.from}
           onChange={(e) => setFilter({ ...filter, from: e.target.value })}
         />
         <input
           type="text"
           placeholder="To"
-          className="border px-4 py-2 rounded"
+          className="border px-1 py-1  md:px-4 md:py-2 rounded"
           value={filter.to}
           onChange={(e) => setFilter({ ...filter, to: e.target.value })}
         />
         <button
-          className="bg-green-500 text-white px-4 py-2 rounded"
+          className="bg-green-500 text-white px-1  py-1  md:px-4 md:py-2 rounded"
           onClick={applyFilter}
         >
           Search
         </button>
         <button
-          className="bg-gray-500 text-white px-4 py-2 rounded"
+          className="bg-gray-500 text-white px-1 py-1  md:px-4 md:py-2 rounded"
           onClick={showAllBuses}
         >
           All Buses

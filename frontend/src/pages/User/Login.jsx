@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser} from "../../redux/actions/user/userActions";
 import { handleError } from "../../utils/toast";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function UserLogin() {
   const [loginData, setloginData] = useState({
@@ -63,7 +63,16 @@ export default function UserLogin() {
             }`}
           >
             {loading ? "Loging..." : "Login"}
+
           </button>
+           <div className="text-center mt-4">
+            <p className="text-sm text-gray-600">
+              Don't have an account?{" "}
+              <Link to="/user/register" className="text-blue-500 hover:underline">
+                Create New Account
+              </Link>
+            </p>
+          </div>
         </form>
       </div>
     </div>

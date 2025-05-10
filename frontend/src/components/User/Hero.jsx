@@ -76,51 +76,51 @@ export default function Hero() {
   return (
     <div className="w-full">
       <div
-        className="user-dashboard flex justify-center  px-6 items-end w-full h-screen relative bg-cover bg-center rounded-b-2xl"
+        className="user-dashboard flex md:flex-row  flex-col justify-center   px-6 items-end w-full h-screen relative bg-cover bg-center rounded-b-2xl"
         style={{ backgroundImage: `url(${bgimg})` }}
       >
-        <div className="leftside w-[40%] h-[70%]  flex flex-col items-start justify-start gap-5">
-          <h1 className="text-[4vw] font-bold  capitalize leading-none  tracking-tight">
+        <div className="leftside w-full md:w-[40%] h-[70%]   flex flex-col items-start md:justify-start justify-end gap-5">
+          <h1 className="text-[6vw] md:text-[4vw] font-bold  capitalize leading-none  tracking-tight">
             Youe Journey of Exploration begins here!{" "}
           </h1>
-          <p className="text-[1.5vw] font-normal leading-none  tracking-tight">
+          <p className="text-[2vw] md:text-[1.5vw] font-normal leading-none  tracking-tight">
             Skip the lines and book your bus tickets online from anywhere,
             anytime. Discover top-rated buses, exclusive offers, and seamless
             booking in seconds. Reliable, affordable, and designed for every
             traveler.
           </p>
-          <button className="bg-[#FFEFC1] rounded-md px-8 py-3 text-black text-[1vw] font-medium">
+          <button className="bg-[#FFEFC1] rounded-md px-8 py-3 text-black text-[2vw]  md:text-[1vw] font-medium">
             Explore Now
           </button>
         </div>
-        <div className="rightside w-[60%] h-[80%] flex items-end">
+        <div className="rightside  w-full md:w-[60%] h-[80%] flex items-end">
           <img src={bus} className="h-full w-full object-bottom" alt="" />
         </div>
       </div>
 
       <div className="w-full  flex justify-center items-center">
-        <div className="h-[40vh] w-1/2 flex flex-col items-center  gap-4 justify-center ">
-          <div className="text-[2.6vw] font-bold  capitalize leading-none  tracking-tight">
+        <div className="h-[40vh] w-[70%] md:w-1/2 flex flex-col items-center  gap-4 justify-center ">
+          <div className="text-[4.5vw] md:text-[2.6vw] font-bold  capitalize leading-none  tracking-tight">
             Popular Routes
           </div>
-          <p className="text-[1.5vw] text-center font-normal leading-none  tracking-tight">
+          <p className="text-[2vw] md:text-[1.5vw] text-center font-normal leading-none  tracking-tight">
             Explore our most popular bus routes, chosen by thousands of
             travelers across the country. From daily commutes to weekend
             getaways, these top routes offer the perfect blend of comfort,
             affordability, and convenience
           </p>
 
-          <button className="bg-gradient-to-r from-[#11C9A7] to-[#13C881] px-6 py-2 rounded-md text-[1.6vw] text-black">
+          <button className="bg-gradient-to-r from-[#11C9A7] to-[#13C881] px-6 py-2 rounded-md text-[2vw] md:text-[1.6vw] text-black">
             Satation & Stop
           </button>
         </div>
       </div>
 
-      <div className="showbus w-full min-h-[50vh] flex justify-between gap-5 px-6">
+      <div className="showbus w-full min-h-[50vh] grid md:grid-cols-3  grid-cols-1  gap-5 px-6">
         {buses.slice(0,3).map((bus) => (
           <div
             key={bus._id}
-            className=" bg-gray-200 rounded-lg shadow-md p-4 w-[28vw] relative "
+            className=" bg-gray-200 rounded-lg shadow-md p-4 w-full relative "
           >
             <h2 className="text-xl font-bold absolute top-5 z-[6] right-[5%]">
               {bus.name}
@@ -135,37 +135,37 @@ export default function Hero() {
             </div>
             <div className="w-full">
               <div className="flex justify-between w-full items-center">
-                <p className="text-[1.5vw] font-medium">{bus.route.from} </p>
+                <p className="text-[2.3vw] md:text-[1.5vw] font-medium">{bus.route.from} </p>
                 <div className="h-[1px] w-[50%] bg-gray-500"></div>
-                <p className="text-[1.5vw] font-medium">{bus.route.to}</p>
+                <p className="text-[2.3vw] md:text-[1.5vw] font-medium">{bus.route.to}</p>
               </div>
               <div className="flex justify-between w-full">
-                <p className="text-[1.2vw] font-medium">
+                <p className="text-[2.3vw] md:text-[1.2vw] font-medium">
                   Available Seats: {bus.availableSeats.length}
                 </p>
-                <p className="text-[1.2vw] font-medium">
+                <p className="text-[2.3vw] md:text-[1.2vw] font-medium">
                   Price per seat: ₹{calculatePrice(bus)}
                 </p>
               </div>
             </div>
-            <button className=" border-blue-500 cursor-pointer border-[1px] text-black font-medium px-4 w-full py-2 rounded mt-4">
-              Book Ticket
+            <button onClick={() => navigate("/user/available-buses")} className=" border-blue-500 cursor-pointer border-[1px] text-black font-medium px-4 w-full py-2 rounded mt-4">
+              Book Now
             </button>
           </div>
         ))}
       </div>
 
-      <div className="about w-full flex justify-center  items-center  pt-[5rem] px-6 overflow-hidden">
-        <div className="leftside h-[40vh] w-[40%] flex items-start  justify-start flex-col ">
-          <h1 className="text-[1.4vw] text-black font-medium">Testimonial</h1>
-          <div className="text-[4vw] font-bold  capitalize leading-none  tracking-tight">
+      <div className="about w-full flex flex-col md:flex-row justify-center  items-center  pt-[5rem] px-6 overflow-hidden">
+        <div className="leftside h-[30vh] md:h-[40vh] w-full md:w-[40%] flex md:items-start  md:justify-start items-center justify-center flex-col ">
+          <h1 className="text-[3vw] md:text-[1.4vw] text-black font-medium">Testimonial</h1>
+          <div className="text-[6vw] md:text-[4vw] font-bold  capitalize leading-none  tracking-tight">
             what people say About us .
           </div>
         </div>
-        <div className="rightside h-[50vh] flex items-center justify-center w-[60%] ">
+        <div className="rightside h-[50vh] flex items-center justify-center w-full md:w-[60%] ">
           <div
             id="rightsidewraper"
-            className="rightsidewraper w-[80%] h-[90%] overflow-x-hidden relative "
+            className="rightsidewraper w-full md w-full:md:w-[80%] h-[90%] overflow-x-hidden relative "
           >
             <Swiper
               spaceBetween={30}
@@ -203,14 +203,14 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className="bg-gray-100 flex  items-center  justify-between py-16 px-6 lg:px-18 text-gray-800 ">
-        <div className="w-1/2 ">
+      <div className="bg-gray-100 flex  md:flex-row flex-col items-center  justify-between py-16 px-6 lg:px-18 text-gray-800 ">
+        <div className="w-full md:w-1/2 ">
           <h2 className="text-3xl font-bold mb-10">
             Book Your Ticket in 3 Easy Steps
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-1 gap-4 w-[80%]">
-            <div className="bg-white h-[15vh] rounded-md flex shadow-md px-6 py-3 gap-2 hover:shadow-xl transition-all">
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-4 w-full md:w-[80%]">
+            <div className="bg-white  h-[20vh] md:h-[15vh] rounded-md flex shadow-md  px-4 md:px-6 py-4 md:py-3 gap-2 hover:shadow-xl transition-all">
               <div className="text-red-600 text-4xl mb-4 mx-auto w-fit ">
                 <BusFront size={40} />
               </div>
@@ -223,7 +223,7 @@ export default function Hero() {
               </div>
             </div>
 
-            <div className="bg-white  h-[15vh]  rounded-md flex shadow-md px-6 py-3 gap-2 hover:shadow-xl transition-all">
+            <div className="bg-white    h-[20vh] md:h-[15vh]  rounded-md flex shadow-md  px-4 md:px-6 py-4 md:py-3 gap-2 hover:shadow-xl transition-all">
               <div className="text-red-600 text-4xl mb-4 mx-auto w-fit">
                 <Armchair size={40} />
               </div>
@@ -237,7 +237,7 @@ export default function Hero() {
                 </p>
               </div>
             </div>
-            <div className="bg-white  h-[15vh]  rounded-md flex shadow-md px-6 py-3 gap-2 hover:shadow-xl transition-all">
+            <div className="bg-white    h-[20vh] md:h-[15vh]  rounded-md flex shadow-md  px-4 md:px-6 py-4 md:py-3 gap-2 hover:shadow-xl transition-all">
               <div className="text-red-600 text-4xl mb-4 mx-auto w-fit">
                 <CreditCard size={40} />
               </div>
@@ -253,7 +253,7 @@ export default function Hero() {
             </div>
           </div>
         </div>
-        <div className="w-1/2  ">
+        <div className="w-full md:w-1/2  ">
           <div className="imagesplash h-[60vh] w-full relative">
             <img
               src={bus3}
@@ -264,16 +264,16 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className=" px-6 lg:px-32 text-gray-800  h-[40vh]">
+      <div className="md:px-32 text-gray-800  h-[40vh]">
         <div
-          className="max-w-6xl h-full text-center bg-cover bg-center "
+          className="w-full md:max-w-6xl h-full text-center bg-cover bg-center "
           style={{ backgroundImage: `url(${city})` }}
         >
-          <div className="flex items-center justify-center flex-col h-full bg-white/10 backdrop-blur-sm border border-white/10 rounded-xl p-10 ">
-            <h2 className="text-3xl font-bold mb-4 text-black">Our Services</h2>
+          <div className="flex items-center justify-center flex-col h-full bg-white/10 backdrop-blur-sm border border-white/10 md:rounded-xl  md:p-10 ">
+            <h2 className="text-3xl font-bold md:mb-4 text-black">Our Services</h2>
 
-            <div className="w-[50%]">
-              <p className="text-black mb-6">
+            <div className="w-full md:w-[50%]">
+              <p className="text-black md:mb-6">
                 We provide seamless online bus booking, real-time seat
                 availability, and secure payment options to ensure a hassle-free
                 travel experience. Whether you're commuting locally or planning

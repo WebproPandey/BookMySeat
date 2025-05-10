@@ -61,22 +61,22 @@ const MyTicket = () => {
   const allTickets = Array.isArray(tickets?.tickets) ? tickets.tickets : [];
 
   return (
-    <div className="p-4 max-w-6xl mx-auto py-[10vh]">
+    <div className="p-4 max-w-6xl mx-auto pt-[15vh]   md:py-[10vh]">
       <h1 className="text-2xl font-bold mb-6 text-center">🚌 My Bus Tickets</h1>
       {loading ? (
         <p className="text-center text-blue-500">Loading...</p>
       ) : allTickets.length === 0 ? (
         <p className="text-center text-gray-500">No tickets found.</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {allTickets.map((ticket) => (
             <div
               key={ticket.ticketId}
               className="relative border shadow-md rounded-xl overflow-hidden"
             >
-              <div className="flex   items-stretch ">
-                <div className="leftside w-[70%] h-full  border-dashed border-black border-r-[1px] ">
-                  <div className="top bg-blue-400  flex items-center justify-between w-full h-[10vh] pr-1">
+              <div className="flex md:flex-row flex-col items-stretch ">
+                <div className="leftside w-full md:w-[70%] h-full  border-dashed border-black border-b-[1px] md:border-b-0 md:border-r-[1px] ">
+                  <div className="top bg-blue-400  flex items-center justify-between w-full h-[10vh] pr-3 md:pr-1">
                     <div className="h-full flex items-start   gap-5 ">
                       <img
                         src={buslogo}
@@ -84,23 +84,23 @@ const MyTicket = () => {
                         alt=""
                       />
                       <div className="flex flex-col h-full items-start  gap-2  justify-center leading-none tracking-tight">
-                      <div className="text-[1.2vw] uppercase">Bus Yatra</div>
-                      <p className="text-[1vw]">Have a Nice BusTrip</p>
+                      <div className="text-[3vw] font-medium md:text-[1.2vw] uppercase">Bus Yatra</div>
+                      <p className="text-[2vw]  font-medium md:text-[1vw]">Have a Nice BusTrip</p>
                     </div>
                     </div>
                   
 
-                    <div className="flex flex-col justify-center leading-none tracking-tight">
-                      <div className="text-[1.2vw] uppercase">
+                    <div className="flex flex-col justify-center gap-2  leading-none tracking-tight">
+                      <div className="text-[3vw] font-medium md:text-[1.2vw]   uppercase">
                         Boarding Pass
                       </div>
-                      <p className="text-[1vw] text-end">
+                      <p className="text-[2vw]  font-medium md:text-[1vw] text-end">
                         {ticket.busId.busType}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex flex-col  bg-gradient-to-br from-blue-100 to-blue-300  items-center gap-9  justify-between h-full px-3 py-2">
+                  <div className="flex flex-col  bg-gradient-to-br from-blue-100 to-blue-300  items-center gap-4 md:gap-9  justify-between h-full px-3 py-2">
                    <div className="w-full flex items-start justify-between">
                     <div className="leading-none  ">
                       <p className="text-md">Passenger</p>
@@ -128,7 +128,7 @@ const MyTicket = () => {
                     </div>
                    </div>
 
-                   <div className="h-full w-full flex  justify-between  items-center">
+                   <div className="h-full w-full flex  justify-between  items-start relative ">
                     <div className=" flex justify-between gap-4  items-center   ">
                       <div className="leading-none  ">
                         <p className="text-md">From</p>
@@ -136,7 +136,7 @@ const MyTicket = () => {
                           {ticket.busId.route.from}
                         </p>
                       </div>
-                      <div className="leading-none  w-full text-end ">
+                      <div className="leading-none  w-full  ">
                         <p className="text-md">To</p>
                         <p className="text-sm text-blue-500">
                           {ticket.busId.route.to}
@@ -159,16 +159,24 @@ const MyTicket = () => {
                       />
                       <p className="text-xs mt-1">Scan at boarding</p>
                     </div>
+                    <div className="absolute  bottom-0 left-0.5">
+                      <div className="leading-none  ">
+                       <p className="text-md">TicketId</p>
+                       <p className="text-sm text-blue-500">
+                         {ticket.ticketId}
+                        </p>
+                    </div>
+                    </div>
                    </div>
 
                   </div>
 
                 </div>
 
-                <div className="rightside w-[30%] h-full  ">
+                <div className="rightside w-full md:w-[30%] h-full  ">
                   <div className="w-full bg-white  flex flex-col  justify-between">
-                    <div className="top bg-blue-400  flex items-center justify-center w-full h-[10vh]">
-                      <div className="text-[1vw] uppercase text-black">
+                    <div className="top bg-blue-400  flex items-center justify-center w-full h-[5vh] md:h-[10vh]">
+                      <div className="text-[3vw] md:text-[1vw] uppercase text-black">
                         Boarding Pass
                       </div>
                     </div>

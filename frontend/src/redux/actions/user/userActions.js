@@ -43,10 +43,10 @@ export const registerUser = (userData ,navigate, showError) => async (dispatch) 
 
     dispatch({ type: USER_REGISTER_SUCCESS, payload:user });
     navigate("/user/home");
-    console.log("User registered successfully:", response.data);
+    // console.log("User registered successfully:", response.data);
 
   } catch (error) {
-    console.error("Error registering user:", error.message);
+    // console.error("Error registering user:", error.message);
     const message = error.response?.data?.error || "Registration failed";
     if (showError) showError(message)
       {
@@ -105,7 +105,7 @@ export const fetchUserDetails = (navigate) => async (dispatch) => {
     // console.log("User details fetched successfully:", response.data);
     dispatch({ type: USER_LOGIN_SUCCESS, payload: response.data });
   } catch (error) {
-    console.error("Error fetching user details:", error.message);
+    // console.error("Error fetching user details:", error.message);
     dispatch({
       type: USER_LOGIN_FAIL,
       payload: error.response?.data?.error || "Failed to fetch user details",
@@ -123,11 +123,11 @@ export const fetchBusUser = (navigate) => async (dispatch) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("Available buses fetched successfully:", response.data);
+    // console.log("Available buses fetched successfully:", response.data);
     dispatch({ type: FETCH_USERSBUS_SUCCESS, payload: response.data });
     
   } catch (error) {
-    console.error("Error fetching available buses:", error.message);
+    // console.error("Error fetching available buses:", error.message);
     dispatch({
       type: FETCH_USERSBUS_FAIL,
       payload: error.response?.data?.error || "Failed to fetch buses",
@@ -147,10 +147,10 @@ export const fetchPromoCode = (navigate) => async (dispatch) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("Promo details fetched successfully:", response.data);
+    // console.log("Promo details fetched successfully:", response.data);
     dispatch({ type: FETCH_USERSPROMO_SUCCESS, payload: response.data });
   } catch (error) {
-    console.error("Error fetching user details:", error.message);
+    // console.error("Error fetching user details:", error.message);
     dispatch({
       type: FETCH_USERSPROMO_FAIL,
       payload: error.response?.data?.error || "Failed to fetch buses",
@@ -167,11 +167,11 @@ export const createOrder = (amount) => async (dispatch) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("Order created successfully:", response.data);
+    // console.log("Order created successfully:", response.data);
     dispatch({ type: CREATE_ORDER_SUCCESS, payload: response.data });
     return response.data; 
   } catch (error) {
-    console.error("Error creating Razorpay order:", error);
+    // console.error("Error creating Razorpay order:", error);
     dispatch({
       type: CREATE_ORDER_FAIL,
       payload: error.response?.data?.error || "Failed to create order",
@@ -191,10 +191,10 @@ export const bookTicket = (ticketData) => async (dispatch) => {
       },
     });
     dispatch({ type: BOOK_TICKET_SUCCESS, payload: response.data });
-    console.log("Ticket booked successfully:", response.data);
+    // console.log("Ticket booked successfully:", response.data);
     return response.data; // Return ticket details
   } catch (error) {
-    console.error("Error booking ticket:", error.message);
+    // console.error("Error booking ticket:", error.message);
     dispatch({
       type: BOOK_TICKET_FAIL,
       payload: error.response?.data?.error || "Failed to book ticket",
@@ -213,10 +213,10 @@ export const fetchTickets = () => async (dispatch) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("Tickets fetched successfully:", response.data);
+    // console.log("Tickets fetched successfully:", response.data);
     dispatch({ type: FETCH_TICKET_SUCCESS, payload: response.data });
   } catch (error) {
-    console.error("Error fetching tickets:", error.message);
+    // console.error("Error fetching tickets:", error.message);
     dispatch({
       type: FETCH_TICKET_FAIL,
       payload: error.response?.data?.error || "Failed to fetch tickets",
@@ -233,12 +233,12 @@ export const cancelTicket = (ticketId) => async (dispatch) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("Ticket canceled successfully:", response.data);
+    // console.log("Ticket canceled successfully:", response.data);
     dispatch({ type: CANCEL_TICKET_SUCCESS, payload: { ticketId } });
     // toast.success("Ticket canceled successfully!");
     return response.data;
   } catch (error) {
-    console.error("Error canceling ticket:", error);
+    // console.error("Error canceling ticket:", error);
     dispatch({
       type: CANCEL_TICKET_FAIL,
       payload: error.response?.data?.error || "Failed to cancel tickets ",
@@ -258,14 +258,14 @@ export const deleteTicket = (ticketId) => async (dispatch) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("Ticket deleted successfully:", response.data);
+    // console.log("Ticket deleted successfully:", response.data);
 
     // Dispatch the ticketId to the reducer
     dispatch({ type: DELETE_TICKET_SUCCESS, payload: { ticketId } });
     // toast.success("Ticket deleted successfully!");
     return response.data;
   } catch (error) {
-    console.error("Error deleting ticket:", error.message);
+    // console.error("Error deleting ticket:", error.message);
     dispatch({
       type: DELETE_TICKET_FAIL,
       payload: error.response?.data?.error || "Failed to delete ticket",

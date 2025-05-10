@@ -19,7 +19,7 @@ const AvailablePromo = () => {
   if (loading) return <p >Loading...</p>;
 
   return (
-    <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 py-[20vh]">
+    <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-[15vh]  md:py-[20vh]">
       {promos.map((promo) => (
         <div
           key={promo._id}
