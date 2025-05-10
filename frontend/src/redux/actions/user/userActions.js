@@ -42,7 +42,7 @@ export const registerUser = (userData ,navigate, showError) => async (dispatch) 
 
 
     dispatch({ type: USER_REGISTER_SUCCESS, payload:user });
-    navigate("/user/dashboard");
+    navigate("/user/home");
     console.log("User registered successfully:", response.data);
 
   } catch (error) {
@@ -71,7 +71,7 @@ export const loginUser = (loginData , navigate ,showError) => {
         type: USER_LOGIN_SUCCESS,
         payload: user,
       });
-      navigate("/user/dashboard");
+      navigate("/user/home");
     } catch (error) {
       const message = error.response?.data?.error || "Login failed";
       if (showError) showError(message)
@@ -147,7 +147,7 @@ export const fetchPromoCode = (navigate) => async (dispatch) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    // console.log("Promo details fetched successfully:", response.data);
+    console.log("Promo details fetched successfully:", response.data);
     dispatch({ type: FETCH_USERSPROMO_SUCCESS, payload: response.data });
   } catch (error) {
     console.error("Error fetching user details:", error.message);

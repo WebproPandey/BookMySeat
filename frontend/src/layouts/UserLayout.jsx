@@ -5,13 +5,13 @@ import Fotter from '../components/User/Fotter';
 
 const UserLayout = () => {
     return (
-    <>
+    <div className='flex flex-col justify-between min-h-screen'>
       <NavBar />
       <div className="">
         <Outlet />
       </div>
       <Fotter/>
-    </>
+    </div>
   );
 }
 

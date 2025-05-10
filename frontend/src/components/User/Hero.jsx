@@ -14,15 +14,22 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
+import user2  from "../../assets/user2.png"
+import user3  from "../../assets/user3.png"
+import user4  from "../../assets/user4.png"
 
 // import required modules
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 
 export default function Hero() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const { buses, loading, error } = useSelector((state) => state.userBus);
   const calculatePrice = (bus) => {
     const { distance, busType, pricePerKm } = bus;
@@ -39,7 +46,32 @@ export default function Hero() {
     dispatch(fetchBusUser());
   }, [dispatch]);
 
-  console.log("buses:", buses);
+
+
+  const testimonials = [
+  {
+    name: "Ravi Kumar",
+    role: "Frequent Commuter",
+    image: user2,
+    review:
+      "BusYatra made my daily commute painless! The seats are comfy and the booking process is a breeze.",
+  },
+  {
+    name: "Sneha Sharma",
+    role: "Weekend Traveler",
+    image: user4,
+    review:
+      "Booked a last-minute trip to Mumbai—smooth experience and great customer support. Highly recommend!",
+  },
+  {
+    name: "Anuj Patel",
+    role: "Tourist",
+    image: user3,
+    review:
+      "Loved the onboard amenities and the driver was very professional. Will book again soon!",
+  },
+  // …add more testimonials here
+]
 
   return (
     <div className="w-full">
@@ -84,8 +116,8 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className="showbus w-full min-h-[50vh] flex  gap-5 px-6">
-        {buses.map((bus) => (
+      <div className="showbus w-full min-h-[50vh] flex justify-between gap-5 px-6">
+        {buses.slice(0,3).map((bus) => (
           <div
             key={bus._id}
             className=" bg-gray-200 rounded-lg shadow-md p-4 w-[28vw] relative "
@@ -125,7 +157,7 @@ export default function Hero() {
 
       <div className="about w-full flex justify-center  items-center  pt-[5rem] px-6 overflow-hidden">
         <div className="leftside h-[40vh] w-[40%] flex items-start  justify-start flex-col ">
-          <h1 className="text-[1.4vw] text-black font-medium">Testimonila</h1>
+          <h1 className="text-[1.4vw] text-black font-medium">Testimonial</h1>
           <div className="text-[4vw] font-bold  capitalize leading-none  tracking-tight">
             what people say About us .
           </div>
@@ -149,15 +181,23 @@ export default function Hero() {
               modules={[Autoplay, Pagination, Navigation]}
               className="mySwiper max-w-full w-full"
             >
-              <SwiperSlide>Slide 1</SwiperSlide>
-              <SwiperSlide>Slide 2</SwiperSlide>
-              <SwiperSlide>Slide 3</SwiperSlide>
-              <SwiperSlide>Slide 4</SwiperSlide>
-              <SwiperSlide>Slide 5</SwiperSlide>
-              <SwiperSlide>Slide 6</SwiperSlide>
-              <SwiperSlide>Slide 7</SwiperSlide>
-              <SwiperSlide>Slide 8</SwiperSlide>
-              <SwiperSlide>Slide 9</SwiperSlide>
+                {testimonials.map((t, idx) => (
+          <SwiperSlide key={idx}>
+            <div className="bg-gray-300 p-6  shadow-lg flex flex-col items-center text-center">
+              <div className="h-[8vh] w-[8vh] rounded-full border-[1px] border-white">
+              <img
+                src={t.image}
+                alt={t.name}
+                className="w-24 h-24 rounded-full object-cover mb-4"
+              />
+              </div>
+
+              <h3 className="text-lg font-semibold">{t.name}</h3>
+              <p className="text-sm text-black mb-4">{t.role}</p>
+              <p className="text-gray-700">{t.review}</p>
+            </div>
+          </SwiperSlide>
+        ))}
             </Swiper>
           </div>
         </div>
@@ -230,25 +270,21 @@ export default function Hero() {
           style={{ backgroundImage: `url(${city})` }}
         >
           <div className="flex items-center justify-center flex-col h-full bg-white/10 backdrop-blur-sm border border-white/10 rounded-xl p-10 ">
+            <h2 className="text-3xl font-bold mb-4 text-black">Our Services</h2>
 
-  <h2 className="text-3xl font-bold mb-4 text-black">Our Services</h2>
+            <div className="w-[50%]">
+              <p className="text-black mb-6">
+                We provide seamless online bus booking, real-time seat
+                availability, and secure payment options to ensure a hassle-free
+                travel experience. Whether you're commuting locally or planning
+                a long journey, we make ticket booking fast and reliable.
+              </p>
+            </div>
 
-  <div className="w-[50%]">
-    <p className="text-black mb-6">
-      We provide seamless online bus booking, real-time seat availability,
-      and secure payment options to ensure a hassle-free travel
-      experience. Whether you're commuting locally or planning a long
-      journey, we make ticket booking fast and reliable.
-    </p>
-  </div>
-
-  <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-300">
-    Book Your Ticket
-  </button>
-
-</div>
-
-
+            <button onClick={() => navigate("/user/available-buses")} className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-300">
+              Book Your Ticket
+            </button>
+          </div>
         </div>
       </div>
     </div>

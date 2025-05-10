@@ -1,11 +1,10 @@
-const userService = require('../Services/userService');
-const PromoCode = require('../models/promoCode.modle');
-const Bus = require('../models/bus.model');
-const Ticket = require('../models/ticket.model');
-const PDFDocument = require('pdfkit');
+const userService = require("../Services/userService");
+const PromoCode = require("../models/promoCode.modle");
+const Bus = require("../models/bus.model");
+const Ticket = require("../models/ticket.model");
+const PDFDocument = require("pdfkit");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
-
 
 exports.registerUser = async (req, res) => {
   try {
@@ -18,7 +17,12 @@ exports.registerUser = async (req, res) => {
     }
 
     // Create user
-    const user = await userService.registerUser({ name, email, phone, password });
+    const user = await userService.registerUser({
+      name,
+      email,
+      phone,
+      password,
+    });
 
     // Generate JWT token
     const token = jwt.sign(
@@ -50,13 +54,6 @@ exports.loginUser = async (req, res) => {
 
     const { user, token } = await userService.loginUser({ email, password });
 
-    // Send token in cookie (optional)
-    // res.cookie("token", token, {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === "production",
-    //   sameSite: "Lax",
-    // });
-
     res.status(200).json({
       message: "Login successful",
       token,
@@ -76,7 +73,7 @@ exports.loginUser = async (req, res) => {
 
 exports.getUserProfile = async (req, res) => {
   try {
-    const userId = req.user.userId || req.user._id;  
+    const userId = req.user.userId || req.user._id;
     if (!userId) {
       return res.status(400).json({ error: "User not authenticated" });
     }
@@ -88,11 +85,7 @@ exports.getUserProfile = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-  
-}
-
-
-
+};
 
 exports.getAvailableBuses = async (req, res) => {
   try {
@@ -102,7 +95,6 @@ exports.getAvailableBuses = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
 
 exports.getAllPromos = async (req, res) => {
   const promos = await PromoCode.find({ expiryDate: { $gte: new Date() } });
@@ -116,7 +108,14 @@ exports.bookTicket = async (req, res) => {
       return res.status(400).json({ error: "User not authenticated" });
     }
 
-    const { busId, seats, couponCode, razorpayPaymentId, razorpayOrderId, razorpaySignature } = req.body;
+    const {
+      busId,
+      seats,
+      couponCode,
+      razorpayPaymentId,
+      razorpayOrderId,
+      razorpaySignature,
+    } = req.body;
 
     if (!busId || !seats || seats.length === 0) {
       return res.status(400).json({ error: "Bus ID and seat(s) are required" });
@@ -133,35 +132,43 @@ exports.bookTicket = async (req, res) => {
     }
 
     // Call the service to handle ticket booking logic
-    const ticket = await userService.bookTicket({ busId, seats, couponCode, userId });
+    const ticket = await userService.bookTicket({
+      busId,
+      seats,
+      couponCode,
+      userId,
+    });
 
     res.status(201).json({ message: "Ticket booked successfully", ticket });
   } catch (err) {
     console.error("BookTicket:", err.message);
-    res.status(500).json({ error: err.message || "An error occurred while booking the ticket" });
+    res
+      .status(500)
+      .json({
+        error: err.message || "An error occurred while booking the ticket",
+      });
   }
 };
 
 exports.getMyTickets = async (req, res) => {
   try {
-    const userId = req.user.userId || req.user._id;  
+    const userId = req.user.userId || req.user._id;
     if (!userId) {
       return res.status(400).json({ error: "User not authenticated" });
     }
 
     const tickets = await Ticket.find({ userId })
-      .populate('busId')   
-      .populate('userId')
+      .populate("busId")
+      .populate("userId")
       .sort({ bookingTime: -1 });
 
     res.status(200).json({
       totalTickets: tickets.length,
       tickets,
     });
-
   } catch (err) {
     console.error("getMyTickets:", err.message);
-    res.status(500).json({ error: 'Unable to fetch tickets' });
+    res.status(500).json({ error: "Unable to fetch tickets" });
   }
 };
 
@@ -187,51 +194,107 @@ exports.validatePromoCode = async (req, res) => {
       discountPercent: promo.discountPercent,
       message: "Promo code is valid",
     });
-
   } catch (err) {
     console.error("ValidatePromoCode:", err.message);
     res.status(500).json({ error: "Unable to validate promo code" });
   }
 };
 
-
 exports.getTicketPDF = async (req, res) => {
   try {
-    const ticket = await userService.getTicketById(req.params.ticketId, req.user.userId);
+    const ticket = await userService.getTicketById(
+      req.params.ticketId,
+      req.user.userId
+    );
+    if (!ticket)
+      return res
+        .status(404)
+        .json({ message: "Ticket not found or unauthorized" });
 
-    if (!ticket) return res.status(404).json({ message: 'Ticket not found or unauthorized' });
+    const doc = new PDFDocument({ size: [600, 300], margin: 0 });
+    const pageWidth = 600;
+    const pageHeight = 300;
+    const wmFontSize = 100;
+    const wmY = (pageHeight - wmFontSize) / 2;
 
-    const doc = new PDFDocument();
-    res.setHeader('Content-Disposition', `attachment; filename=ticket-${ticket.ticketId}.pdf`);
-    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=ticket-${ticket.ticketId}.pdf`
+    );
+    res.setHeader("Content-Type", "application/pdf");
     doc.pipe(res);
 
-    doc.fontSize(20).text('Bus Ticket Confirmation', { align: 'center' });
-    doc.moveDown();
-    doc.fontSize(12).text(`Ticket ID: ${ticket.ticketId}`);
-    doc.text(`Passenger: ${ticket.userId.name}`);
-    doc.text(`From: ${ticket.from}`);
-    doc.text(`To: ${ticket.to}`);
-    doc.text(`Distance: ${ticket.distance} KM`);
-    doc.text(`Seats: ${ticket.seatsBooked.join(', ')}`);
-    doc.text(`Bus: ${ticket.busId.name}`);
-    doc.text(`Bus Type: ${ticket.busId.busType}`);
-    doc.text(`Total Fare: ₹${ticket.totalFare}`);
-    doc.text(`Date & Time: ${ticket.bookingTime.toLocaleString()}`);
-    doc.moveDown();
+    // === BACKGROUND COLOR ===
+    doc.rect(0, 0, 600, 300).fill("#87CEFA");
 
+    // === WATERMARK CENTERED ===
+
+    // compute vertical center
+
+    doc.fontSize(wmFontSize).fillColor("#e0f0ff").text(
+      "BusYatra",
+      0, // x = left edge
+      wmY, // y = vertical center minus half font size
+      {
+        width: pageWidth, // span full width
+        align: "center", // center horizontally
+        opacity: 0.2,
+      }
+    );
+
+    // === HEADER ===
+    doc
+      .fontSize(18)
+      .fillColor("#000080")
+      .text("Bus Yatra", 20, 20)
+      .fontSize(10)
+      .fillColor("#000")
+      .text("Have a Nice BusTrip", 20, 40);
+
+    doc
+      .fontSize(14)
+      .fillColor("#000080")
+      .text("BOARDING PASS", 420, 20)
+      .fontSize(10)
+      .fillColor("#000")
+      .text(`Class: ${ticket.busId.busType}`, 420, 40);
+
+    // === LINE UNDER HEADER ===
+    doc.moveTo(20, 60).lineTo(580, 60).strokeColor("#fff").stroke();
+
+    // === SECONDARY HEADER INFO ===
+    doc
+      .fontSize(10)
+      .fillColor("#000")
+      .text(`From: ${ticket.from}`, 20, 70)
+      .text(`To: ${ticket.to}`, 150, 70)
+      .text(`Date & Time: ${ticket.bookingTime.toLocaleString()}`, 320, 70);
+
+    // === LEFT-SIDE DETAILS ===
+    doc
+      .fontSize(12)
+      .fillColor("#000")
+      .text(`Passenger: ${ticket.userId.name}`, 20, 100)
+      .text(`Bus: ${ticket.busId.name}`, 20, 120)
+      .text(`Class: ${ticket.busId.busType}`, 20, 140)
+      .text(`Status: Booked`, 20, 160)
+      .text(`Ticket ID: ${ticket.ticketId}`, 20, 180);
+
+    // === QR CODE RIGHT SIDE ===
     if (ticket.qrCodeUrl) {
-      const qrImageBuffer = Buffer.from(ticket.qrCodeUrl.split(",")[1], "base64");
-      doc.image(qrImageBuffer, { fit: [150, 150], align: 'center' });
+      const qrImageBuffer = Buffer.from(
+        ticket.qrCodeUrl.split(",")[1],
+        "base64"
+      );
+      doc.image(qrImageBuffer, 400, 100, { fit: [150, 150] });
+      doc.fontSize(10).fillColor("#000").text("Scan at boarding", 440, 255);
     }
 
     doc.end();
-
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
-
 
 exports.cancelTicket = async (req, res) => {
   try {
@@ -239,23 +302,27 @@ exports.cancelTicket = async (req, res) => {
     const userId = req.user.userId || req.user._id;
 
     // Populate only busId, not userId!
-    const ticket = await Ticket.findOne({ ticketId }).populate('busId');
+    const ticket = await Ticket.findOne({ ticketId }).populate("busId");
 
     if (!ticket) {
-      return res.status(404).json({ error: 'Ticket not found' });
+      return res.status(404).json({ error: "Ticket not found" });
     }
 
     if (!ticket.userId) {
-      return res.status(400).json({ error: 'Ticket does not have a user assigned' });
+      return res
+        .status(400)
+        .json({ error: "Ticket does not have a user assigned" });
     }
 
     // userId is simple ObjectId (string) => no populate needed
     if (ticket.userId.toString() !== userId.toString()) {
-      return res.status(403).json({ error: 'Unauthorized to cancel this ticket' });
+      return res
+        .status(403)
+        .json({ error: "Unauthorized to cancel this ticket" });
     }
 
-    if (ticket.status === 'cancelled') {
-      return res.status(400).json({ error: 'Ticket is already cancelled' });
+    if (ticket.status === "cancelled") {
+      return res.status(400).json({ error: "Ticket is already cancelled" });
     }
 
     // Seats ko wapas bus ke available seats me add karo (without duplicate)
@@ -272,14 +339,13 @@ exports.cancelTicket = async (req, res) => {
     }
 
     // Ticket ko cancel mark karo
-    ticket.status = 'cancelled';
+    ticket.status = "cancelled";
     await ticket.save();
 
-    res.status(200).json({ message: 'Ticket cancelled successfully' });
-
+    res.status(200).json({ message: "Ticket cancelled successfully" });
   } catch (err) {
-    console.error('CancelTicket:', err.message);
-    res.status(500).json({ error: 'Unable to cancel ticket' });
+    console.error("CancelTicket:", err.message);
+    res.status(500).json({ error: "Unable to cancel ticket" });
   }
 };
 
@@ -289,14 +355,16 @@ exports.deleteTicket = async (req, res) => {
     const userId = req.user.userId || req.user._id;
 
     const ticket = await Ticket.findOne({ ticketId });
-    console.log("ticekts:" ,ticket )
+    console.log("ticekts:", ticket);
 
     if (!ticket) {
-      return res.status(404).json({ error: 'Ticket not found' });
+      return res.status(404).json({ error: "Ticket not found" });
     }
 
     if (ticket.userId.toString() !== userId.toString()) {
-      return res.status(403).json({ error: 'Unauthorized to delete this ticket' });
+      return res
+        .status(403)
+        .json({ error: "Unauthorized to delete this ticket" });
     }
 
     // Find the bus and update availableSeats
@@ -317,12 +385,11 @@ exports.deleteTicket = async (req, res) => {
     // Delete the ticket
     await Ticket.deleteOne({ _id: ticket._id });
 
-    res.status(200).json({ message: 'Ticket deleted permanently and seats updated' });
-
+    res
+      .status(200)
+      .json({ message: "Ticket deleted permanently and seats updated" });
   } catch (err) {
-    console.error('deleteTicket:', err.message);
-    res.status(500).json({ error: 'Unable to delete ticket' });
+    console.error("deleteTicket:", err.message);
+    res.status(500).json({ error: "Unable to delete ticket" });
   }
 };
-
-

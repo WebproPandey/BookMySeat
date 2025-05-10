@@ -60,17 +60,6 @@ const App = () => {
           </UserProtectedRoute>
           } />
           
-        <Route path="/user/about" element={
-          <UserProtectedRoute>
-            <About/>
-          </UserProtectedRoute>
-          } />
-        <Route path="/user/services" element={
-          <UserProtectedRoute>
-            <Services/>
-          </UserProtectedRoute>
-          } />
-
      </Route>
 
 
