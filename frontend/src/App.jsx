@@ -1,7 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import AdminHome from "./pages/Home";
 import AdminRegister from "./pages/Admin/Register";
 import AdminLogin from "./pages/Admin/Login";
 import AdminDashboard from "./pages/Admin/Dashboard";
@@ -23,10 +22,10 @@ import UserProtectedRoute from "./components/UserProtectedRoute";
 import AvailableBuses from "./components/User/AvailableBuses";
 import MyTicket from "./components/User/MyTicket";
 import AvailablePromo from "./components/User/AvailablePromo";
-import About from "./components/User/About";
-import Services from "./components/User/Services";
 import UserHomes from "./components/User/UserHome";
 import UserLayout from "./layouts/UserLayout";
+import AdminLayout from "./layouts/AdminLayout";
+import AdminHome from "./pages/AdminHome";
 
 
 const App = () => {
@@ -69,84 +68,25 @@ const App = () => {
 
 
        {/* Admin route  */}
-        <Route path="/admin/home" element={<AdminHome />} />
+        <Route path="/admin"  element={<AdminHome/>} />
         <Route path="/admin/register" element={<AdminRegister />} />
         <Route path="/admin/login" element={<AdminLogin />} />
-        <Route
-          path="/admin/dashboard/*"
-          element={
-            <AdminProtectedRoute>
-              <AdminDashboard />
-            </AdminProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/add-bus"
-          element={
-            <AdminProtectedRoute>
-              <AddBus />
-            </AdminProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/buses"
-          element={
-            <AdminProtectedRoute>
-              <AllBuses />
-            </AdminProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/edit-bus/:id"
-          element={
-            <AdminProtectedRoute>
-              <EditBus />
-            </AdminProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/promos"
-          element={
-            <AdminProtectedRoute>
-              <ManagePromos />
-            </AdminProtectedRoute>
-          }
-        />
+       
+        <Route path="/admin/dashboard" element={
+          <AdminProtectedRoute>
+            <AdminDashboard />
+          </AdminProtectedRoute>
+        }>
+          <Route path="add-bus" element={<AddBus />} />
+          <Route path="buses" element={<AllBuses />} />
+          <Route path="edit-bus/:id" element={<EditBus />} />
+          <Route path="promos" element={<ManagePromos />} />
+          <Route path="users" element={<AllUsers />} />
+          <Route path="user/:id/bookings" element={<UserBookingHistory />} />
+          <Route path="revenue" element={<RevenueModal />} />
+          <Route path="cancel-bus-bookings" element={<CancelBusBookings />} />
+        </Route>
 
-        <Route
-          path="/admin/users"
-          element={
-            <AdminProtectedRoute>
-              <AllUsers />
-            </AdminProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/user/:id/bookings"
-          element={
-            <AdminProtectedRoute>
-              <UserBookingHistory />
-            </AdminProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/revenue"
-          element={
-            <AdminProtectedRoute>
-              <RevenueModal />
-            </AdminProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/admin/cancel-bus-bookings"
-          element={
-            <AdminProtectedRoute>
-              <CancelBusBookings/>
-            </AdminProtectedRoute>
-          }
-        />
- 
        
       </Routes>
       <ToastContainer />

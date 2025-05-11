@@ -7,7 +7,6 @@ import { fetchUserDetails } from '../redux/actions/user/userActions';
 
 const UserLayout = () => {
   const dispatch = useDispatch();
-  const token = localStorage.getItem("userToken");
   const { user, loading } = useSelector((state) => state.userAuth);
    useEffect(() => {
       const token = localStorage.getItem("userToken");
@@ -18,13 +17,13 @@ const UserLayout = () => {
 
     return (
     <div className='flex flex-col justify-between min-h-screen'>
-      {token && (
+      {token && user && (
         <NavBar />
       )}
       <div className="">
         <Outlet />
       </div>
-      {token && (
+      {token && user && (
         <Fotter/>
       )}
       

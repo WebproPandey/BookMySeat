@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginAdmin } from "../../redux/actions/adminAuthActions";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { handleError } from "../../utils/toast";
 
 export default function AdminLogin() {
@@ -53,6 +53,12 @@ export default function AdminLogin() {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
+         <p className="text-center mt-4 text-sm">
+          Don't have an account?{" "}
+          <Link to="/admin/register" className="text-green-600">
+            Create Account
+          </Link>
+        </p>
       </div>
     </div>
   );
