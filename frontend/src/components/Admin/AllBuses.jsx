@@ -19,12 +19,12 @@ export default function AllBuses() {
 //   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="w-full mx-auto ">
-        <h1 className="text-4xl font-bold mb-8 text-center text-blue-800">All Buses</h1>
+    <div className="px-6  relative  overflow-hidden ">
+      <div className="Allbuses w-full  mx-auto bg-gray-100  px-1 h-[90vh] relative rounded-xl overflow-hidden overflow-y-scroll ">
+        <h1 className="text-3xl font-semibold  bg-gray-100 h-[10vh] z-[8] text-center text-blue-700  sticky top-0 pt-2">All Buses</h1>
 
         {buses.length === 0 ? (
-          <div className="text-center">
+          <div className="text-center sticky top-0">
             <p className="text-lg text-gray-600 mb-4">No buses available.</p>
             <Link
               to="/admin/add-bus"
@@ -34,7 +34,7 @@ export default function AllBuses() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 bg-red-200 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 z-[6] w-full sticky top-0 ">
             {buses?.map((bus) => (
               <BusCard key={bus._id} bus={bus} />
             ))}
@@ -79,7 +79,7 @@ function BusCard({ bus }) {
 
   return (
     <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all overflow-hidden max-w-md mx-auto">
-      <div className="w-full h-48 overflow-hidden bg-gray-800">
+      <div className="w-full h-48 overflow-hidden ">
         <img
           src={bus?.busImage}
           alt={bus?.name}

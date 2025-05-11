@@ -32,7 +32,7 @@ export const fetchBuses = () => async (dispatch) => {
   }
 };
 
-export const addBus = (busData, handleSuccess, handleError) => async (dispatch) => {
+export const addBus = (busData, handleSuccess, handleError ,navigate) => async (dispatch) => {
   dispatch({ type: ADD_BUS_REQUEST });
   try {
     const token = localStorage.getItem("adminToken");
@@ -44,6 +44,8 @@ export const addBus = (busData, handleSuccess, handleError) => async (dispatch) 
     });
     dispatch({ type: ADD_BUS_SUCCESS, payload: response.data });
     handleSuccess("Bus added successfully");
+    navigate("/admin/dashboard/buses")
+
   } catch (error) {
     dispatch({
       type: ADD_BUS_FAIL,

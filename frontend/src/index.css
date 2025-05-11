@@ -1,7 +1,9 @@
 @import "tailwindcss";
 
 
-
+.Allbuses::-webkit-scrollbar{
+  display: none;
+}
 
 .swiper {
   width: 100%;
