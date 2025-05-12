@@ -13,7 +13,7 @@ const RecentPromo = () => {
       const dispatch = useDispatch();
 
     const { promos, loading } = useSelector((state) => state.promo);
-  console.log("promos:", promos);
+  // console.log("promos:", promos);
     useEffect(() => {
       dispatch(fetchPromos());
     }, [dispatch]);

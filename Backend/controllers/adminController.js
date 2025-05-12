@@ -24,21 +24,50 @@ exports.loginAdmin = async (req, res) => {
     const { email, password } = req.body;
      
     const result = await adminService.loginAdmin({ email, password });
+    const { token, admin } = result; // ✅ destructure admin from result
 
-    res.cookie('token', result.token, {
+    res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', 
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'Lax',
       maxAge: 24 * 60 * 60 * 3000 
     });
 
-    res.status(200).json({ message: 'Admin login successful', token: result.token });
+    res.status(200).json({ 
+      message: 'Admin login successful',
+      token,
+      admin: {
+        id: admin._id,
+        name: admin.name,
+        email: admin.email,
+        role:admin.role,
+        
+      }
+    });
 
   } catch (error) {
+    console.log("err:", error.message);
     res.status(500).json({ error: error.message });
   }
 };
 
+
+
+exports.getCurrentAdmin = async (req, res) => {
+  try {
+    const adminId = req.admin.userId || req.admin._id;
+    if (!adminId) {
+      return res.status(400).json({ error: "Admin not authenticated" });
+    }
+    const admin = await adminService.findById(adminId);
+    if (!admin) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
+    res.status(200).json(admin);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 // Add Bus
 exports.addBus = async (req, res) => {

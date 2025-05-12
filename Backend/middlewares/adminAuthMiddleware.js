@@ -1,13 +1,13 @@
 const jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => {
-  const authHeader = req.headers.authorization;
+  const token =
+    req.cookies?.token || 
+    (req.headers.authorization?.startsWith("Bearer ") && req.headers.authorization.split(" ")[1]);
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  if (!token) {
     return res.status(401).json({ message: "No token provided" });
   }
-
-  const token = authHeader.split(" ")[1]; 
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -16,10 +16,9 @@ module.exports = (req, res, next) => {
       return res.status(403).json({ message: "Forbidden: Not an admin" });
     }
 
-    req.user = decoded; 
+    req.admin = decoded; // ✅ Store decoded token in req.admin
     next();
   } catch (err) {
-    console.error("JWT Error:", err.message); 
     return res.status(401).json({ message: "Invalid or expired token" });
   }
 };

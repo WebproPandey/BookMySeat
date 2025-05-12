@@ -19,6 +19,8 @@ export const registerAdmin = (adminData, navigate, showError) => {
         type: ADMIN_REGISTER_SUCCESS,
         payload: response.data,
       })
+      console.log(response.data);
+      
       navigate("/admin/dashboard");
     } catch (error) {
       const message = error.response?.data?.error || "Registration failed";
@@ -45,14 +47,15 @@ export const loginAdmin = (adminData, navigate, showError) => {
     dispatch({ type: ADMIN_LOGIN_REQUEST });
     try {
       const response = await api.post("/api/admin/login", adminData);
-      const { token } = response.data;
+      const { token ,admin } = response.data;
       localStorage.setItem("adminToken", token);
       dispatch({
         type: ADMIN_LOGIN_SUCCESS,
-        payload: { token },
+        payload: { token, admin: admin},
       });
       navigate("/admin/dashboard");
     } catch (error) {
+      console.log("error:" ,error)
       const message = error.response?.data?.error || "Login failed";
       if (showError) showError(message)
         {
@@ -65,6 +68,29 @@ export const loginAdmin = (adminData, navigate, showError) => {
     }
   };
 };
+
+export const fetchCurrentAdmin = () => {
+  return async (dispatch) => {
+    dispatch({ type: ADMIN_LOGIN_REQUEST });
+    try {
+      const response = await api.get("/api/admin/me");
+
+      dispatch({
+        type: ADMIN_LOGIN_SUCCESS,
+        payload: {
+          token: null, // no need for token in state
+          admin: response.data,
+        },
+      });
+    } catch (error) {
+      dispatch({
+        type: ADMIN_LOGIN_FAILURE,
+        payload: "Session expired, please login again",
+      });
+    }
+  };
+};
+
 
 export const logoutAdmin = (navigate) => (dispatch) => {
     localStorage.removeItem("adminToken"); 

@@ -12,7 +12,6 @@ export default function RevenueModal() {
   const navigate = useNavigate(); 
   const { loading, revenueStats, error } = useSelector((state) => state.revenue);
 
-  console.log('Revenue Stats:', revenueStats);
 
   useEffect(() => {
     dispatch(fetchRevenueStats());
@@ -37,7 +36,7 @@ export default function RevenueModal() {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div className="inset-0 bg-gray-200 px-4  py-5   bg-opacity-50 flex items-center justify-center">
       <div className="bg-white p-6 rounded shadow-lg w-3/4">
         <h2 className="text-2xl font-bold mb-4">Revenue Statistics</h2>
         {loading ? (

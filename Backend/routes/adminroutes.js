@@ -2,12 +2,15 @@ const express = require('express');
 const router = express.Router();
 
 const { registerAdmin, loginAdmin, addBus, getAllBuses, updateBus, deleteBus, PromoCode ,updatePromoCode,
-    deletePromoCode, getAllPromoCodes ,  getAllUsers,getUserBookingHistory ,getRevenueStats ,cancelAllBusBookings } = require('../controllers/adminController');
+    deletePromoCode, getAllPromoCodes ,  getAllUsers,getUserBookingHistory ,getRevenueStats ,cancelAllBusBookings, 
+    getCurrentAdmin} = require('../controllers/adminController');
 const upload = require('../config/multerConfig');
 const adminAuthMiddleware = require('../middlewares/adminAuthMiddleware');
 
 router.post('/register', registerAdmin);
 router.post('/login',  loginAdmin);
+router.get('/me', adminAuthMiddleware, getCurrentAdmin);
+
 
 router.post('/add-bus', adminAuthMiddleware, upload.single('busImage'), addBus);
 router.get('/buses',adminAuthMiddleware, getAllBuses);

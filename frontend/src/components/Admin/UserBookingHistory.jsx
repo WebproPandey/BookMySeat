@@ -1,11 +1,13 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserBookingHistory } from "../../redux/actions/userActions";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { MoveLeftIcon } from "lucide-react";
 
 export default function UserBookingHistory() {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const   navigate = useNavigate()
   const { userBookings, loading } = useSelector((state) => state.user);
 
   console.log("userBookings:", userBookings); // Debugging the structure of userBookings
@@ -29,25 +31,29 @@ export default function UserBookingHistory() {
   }, {});
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">User Booking History</h1>
+    <div className="userbooking px-4 pb-2 max-h-[80vh] overflow-hidden overflow-y-scroll">
+      <div className="flex items-center  justify-between sticky  top-0 bg-white">
+        <h1 className="text-2xl font-bold mb-4">User Booking History</h1>
+       <button onClick={() => navigate(-1)} className="cursor-pointer"><MoveLeftIcon size={24} />   </button>
+      </div>
 
-      {/* Display user details */}
-      <div className="mb-6 p-4 bg-blue-100 rounded shadow">
+
+      <div className="mb-6 p-4 bg-gray-100 rounded shadow sticky  top-[6vh]">
+        <div className="bg-white p-3">
         <h2 className="text-lg font-bold">User Details</h2>
         <p><strong>Name:</strong> {user.name || "N/A"}</p>
         <p><strong>Email:</strong> {user.email || "N/A"}</p>
-        <p><strong>Wallet Balance:</strong> ₹{user.walletBalance || 0}</p>
         <p><strong>Booking Count:</strong> {user.bookingCount || 0}</p>
+        </div>
       </div>
 
       {/* Display booking history */}
       {loading ? (
         <p>Loading booking history...</p>
       ) : Object.keys(bookingsByBus).length > 0 ? (
-        <div className="space-y-6">
+        <div className="space-y-6  ">
           {Object.entries(bookingsByBus).map(([busName, bookings]) => (
-            <div key={busName} className="p-4 bg-gray-100 rounded shadow">
+            <div key={busName} className="p-4 bg-gray-100 rounded shadow ">
               <h2 className="text-lg font-bold">Bus: {busName}</h2>
               <div className="space-y-4 mt-4">
                 {bookings.map((booking) => (

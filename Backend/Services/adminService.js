@@ -14,7 +14,7 @@ exports.registerAdmin = async ({ name, email, phone, password }) => {
   return { message: 'Admin registered successfully' };
 };
 
-exports.loginAdmin = async ({ email, password }) => {
+ exports.loginAdmin = async ({ email, password }) => {
   const admin = await Admin.findOne({ email, role: 'admin' });
   if (!admin) throw new Error('Admin not found');
 
@@ -27,5 +27,23 @@ exports.loginAdmin = async ({ email, password }) => {
     { expiresIn: '3d' }
   );
 
-  return { token };
+  return { token, admin }; // ✅ return both
 };
+
+
+
+exports.findById = async (adminId) => {
+  try {
+    const admin = await Admin.findById(adminId).select("-password");
+
+    if (!admin) {
+      throw new Error("Admin not found");
+    }
+
+    return admin;
+  } catch (error) {
+    throw new Error(error.message); 
+  }
+};
+
+

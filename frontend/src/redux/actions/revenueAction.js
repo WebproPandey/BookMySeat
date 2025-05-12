@@ -13,7 +13,7 @@ export const fetchRevenueStats = () => async (dispatch) => {
     const response = await api.get('/api/admin/revenue', {
       headers: { Authorization: `Bearer ${token}` },
     });
-    console.log('API Response:', response.data);
+    // console.log('API Response:', response.data);
     dispatch({
       type: FETCH_REVENUE_SUCCESS,
       payload: response.data,

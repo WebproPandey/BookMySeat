@@ -1,8 +1,28 @@
 import { Banknote, Bus, BusFront, Home, List, Tag, User } from 'lucide-react'
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom'
+import { fetchCurrentAdmin, logoutAdmin } from '../../redux/actions/adminAuthActions';
 
 const NavBar = () => {
+
+  const navigate = useNavigate();
+   const dispatch = useDispatch();
+  const { token, admin } = useSelector((state) => state.adminAuth);
+
+  useEffect(() => {
+    if (token && !admin) {
+      dispatch(fetchCurrentAdmin());
+    }
+  }, [token, admin, dispatch]);
+
+
+  const handleLogout = () => {
+    dispatch(logoutAdmin(navigate));
+  };
+
+
+    
   return (
     <div className='h-screen w-[25vw]  px-[2vw] py-2' >
       <div className='h-full w-full '>
@@ -38,11 +58,33 @@ const NavBar = () => {
           </div>
 
         </div>
-        <div className='h-[20%] w-full  flex justify-between items-center'>
-          <div className='h-[6vh] w-[6vh] rounded-full bg-gray-300 flex  items-center  justify-center'>
-           <User size={24} className='text-black' />
-          </div>
-          <div className='text-[1vw] font-semibold'>User Name ..</div>
+        <div className='h-[20%] w-full flex justify-between items-center'>
+          {admin ?(
+             <>
+              <div className='text-[1.2vw] font-semibold'>{admin.name}</div>
+              <button
+                onClick={handleLogout}
+                className='bg-red-500 text-white text-[1vw] px-3 py-1 rounded-lg hover:bg-red-600 transition'
+              >
+                Logout
+              </button>
+            </>
+           
+          ):(
+           
+             <>
+             <div className='h-[6vh] w-[6vh] rounded-full bg-gray-300 flex items-center justify-center'>
+              <User size={24} className='text-black' />
+            </div>
+              <button
+                onClick={() => navigate("/admin/login")}
+                className='bg-red-500 text-white text-[1vw] px-3 py-1 rounded-lg hover:bg-red-600 transition'
+              >
+                Login
+              </button>
+            </>
+          ) 
+        }
         </div>
       </div>
 
