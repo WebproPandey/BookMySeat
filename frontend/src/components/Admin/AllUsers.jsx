@@ -25,7 +25,7 @@ export default function AllUsers() {
       {loading ? (
         <p>Loading users...</p>
       ) : (
-        <div className="Alluser space-y-4 grid  grid-cols-2 md:grid-cols-4  px-2 h-[70vh] md:h-fit overflow-scroll z-[5]   pt-0 pb-10 md:py-8  gap-x-3 gap-y-3 w-full bg-gray-100  ">
+        <div className="Alluser space-y-4 grid  grid-cols-2 md:grid-cols-4  px-2  h-[70vh] md:h-fit overflow-scroll z-[5]   pt-0 pb-10 md:py-8  gap-x-3 gap-y-3 w-full bg-gray-100  ">
           {users.map((user) => (
             <div key={user._id} className="p-4  flex flex-col h-full  items-start  justify-between bg-white rounded shadow">
               <h2 className="text-lg font-bold">{user.name}</h2>

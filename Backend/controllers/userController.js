@@ -355,7 +355,6 @@ exports.deleteTicket = async (req, res) => {
     const userId = req.user.userId || req.user._id;
 
     const ticket = await Ticket.findOne({ ticketId });
-    console.log("ticekts:", ticket);
 
     if (!ticket) {
       return res.status(404).json({ error: "Ticket not found" });
