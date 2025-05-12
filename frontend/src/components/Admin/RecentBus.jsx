@@ -30,8 +30,8 @@ const RecentBus = () => {
         >
                    {buses?.slice(-3).map((bus) => (
                    <SwiperSlide key={bus._id}>
-                     <div className="w-full h-full relative flex justify-center items-center rounded-xl overflow-hidden shadow-lg bg-gradient-to-r from-amber-300 to-amber-200">
-                        <div className='w-[80%] h-full '>
+                     <div className="w-full h-full relative flex justify-center items-center rounded-md md:rounded-xl overflow-hidden shadow-lg bg-gradient-to-r from-amber-300 to-amber-200">
+                        <div className='w-full md:w-[80%] h-full '>
                         <img
                            src={bus.busImage}
                            alt={bus.name}
@@ -42,8 +42,8 @@ const RecentBus = () => {
                       
        
                        <div className=" z-10  absolute  w-full top-0 left-1/2 -translate-x-1/2  text-center">
-                         <h2 className="text-5xl font-bold text-black">{bus.name}</h2>
-                         <p className="text-2xl  font-medium text-white">{bus.route.from.trim()} → {bus.route.to.trim()}</p>
+                         <h2 className="text-2xl md:text-5xl font-bold text-black">{bus.name}</h2>
+                         <p className="text-md md:text-2xl  font-medium text-white">{bus.route.from.trim()} → {bus.route.to.trim()}</p>
                        </div>
                      </div>
                    </SwiperSlide>

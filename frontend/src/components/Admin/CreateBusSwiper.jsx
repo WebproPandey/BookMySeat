@@ -34,7 +34,7 @@ const CreateBusSwiper = () => {
                 
             {buses?.slice(-4).map((bus) => (
             <SwiperSlide key={bus._id}>
-              <div className="w-full h-[300px] relative flex justify-center items-center rounded-xl overflow-hidden shadow-lg bg-black/20 ">
+              <div className="w-full h-[200px] md:h-[300px] relative flex justify-center items-center rounded-xl overflow-hidden shadow-lg bg-black/20 ">
                  <div className='w-[80%] h-full '>
                  <img
                     src={bus.busImage}

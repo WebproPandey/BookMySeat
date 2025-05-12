@@ -9,6 +9,13 @@
   display: none;
 }
 
+.ManagePromos::-webkit-scrollbar{
+  display: none;
+}
+.Alluser::-webkit-scrollbar{
+  display: none;
+}
+
 .swiper {
   width: 100%;
   height: 100%;

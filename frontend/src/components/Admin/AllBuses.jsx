@@ -20,7 +20,7 @@ export default function AllBuses() {
 
   return (
     <div className="px-6  relative  overflow-hidden ">
-      <div className="Allbuses w-full  mx-auto bg-gray-100  px-1 h-[90vh] relative rounded-xl overflow-hidden overflow-y-scroll ">
+      <div className="Allbuses w-full  mx-auto bg-gray-100  h-[80vh] px-1 md:h-[85vh] relative rounded-xl overflow-hidden overflow-y-scroll ">
         <h1 className="text-3xl font-semibold  bg-gray-100 h-[10vh] z-[8] text-center text-blue-700  sticky top-0 pt-2">All Buses</h1>
 
         {buses.length === 0 ? (
@@ -34,7 +34,7 @@ export default function AllBuses() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 z-[6] w-full sticky top-0 ">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 z-[1] w-full sticky top-0 ">
             {buses?.map((bus) => (
               <BusCard key={bus._id} bus={bus} />
             ))}
@@ -78,8 +78,8 @@ function BusCard({ bus }) {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all overflow-hidden max-w-md mx-auto">
-      <div className="w-full h-48 overflow-hidden ">
+    <div className="bg-white rounded-2xl shadow-md hover:shadow-xl md:py-0 py-2 transition-all overflow-hidden max-w-md mx-auto">
+      <div className="w-full h-[25vh]  md:h-48 overflow-hidden ">
         <img
           src={bus?.busImage}
           alt={bus?.name}
@@ -88,7 +88,7 @@ function BusCard({ bus }) {
       </div>
 
       {/* Details section */}
-      <div className="p-4 space-y-2">
+      <div className="p-2 md:p-4 space-y-1 md:space-y-2">
         <h2 className="text-xl font-bold text-gray-800">{bus?.name}</h2>
         <p className="text-gray-600 text-sm">
           {bus?.route?.from} ➝ {bus?.route?.to}
@@ -119,22 +119,22 @@ function BusCard({ bus }) {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-between mt-4">
+        <div className="flex md:gap-0  gap-1 justify-between mt-1 md:mt-4">
           <button
             onClick={handleEdit}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            className="bg-blue-500 text-white px-4 py-1 md:py-2 rounded hover:bg-blue-600"
           >
             Edit
           </button>
           <button
             onClick={handleCancelBookings}
-            className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+            className="bg-yellow-500 text-white px-4 py-1 md:py-2 rounded hover:bg-yellow-600"
           >
             Cancel Bookings
           </button>
           <button
             onClick={handleDelete}
-            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+            className="bg-red-500 text-white px-4 py-1 md:py-2 rounded hover:bg-red-600"
           >
             Delete
           </button>

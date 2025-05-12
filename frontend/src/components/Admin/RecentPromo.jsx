@@ -34,19 +34,19 @@ const RecentPromo = () => {
            {promos?.length > 0 && promos.slice(-4).map((promo) => (
             <SwiperSlide key={promo._id}>
               <div className="flex justify-center items-center w-full h-full">
-                <div className="bg-gradient-to-r from-cyan-500 to-cyan-200 rounded-2xl text-white  flex flex-col items-start  justify-between  shadow-xl  h-full w-full px-6 py-3">
-                    <div className='text-white text-[2vw] font-medium  '>CouponCode</div>
+                <div className="bg-gradient-to-r from-cyan-500 to-cyan-200 rounded-md md:rounded-2xl text-white  flex flex-col items-start  justify-between  shadow-xl  h-full w-full px-2 md:px-6 py-3">
+                    <div className='text-white text-[3vw] md:text-[2vw] font-medium  '>CouponCode</div>
                   <div className="flex flex-col  justify-between items-start h-[50%] mb-2">
-                    <span className="text-white  py-1  text-5xl font-semibold">
+                    <span className="text-white  py-1 text-2xl  md:text-5xl font-semibold">
                       {promo.discountPercent}% OFF
                     </span>
-                    <h2 className="text-2xl font-bold tracking-wider uppercase text-white">{promo.code}</h2>
+                    <h2 className="md:text-2xl text-[3vw] font-bold tracking-wider uppercase text-white">{promo.code}</h2>
                     <div>
 
                     </div>
                    
                   </div>
-                   <p className=" mb-2 text-red-500 font-semibold text-base ">
+                   <p className=" mb-2 text-red-500 font-semibold text-sm md:text-base ">
                     <span className="font-semibold text-black">Expiry:</span>
                      {moment(promo.expiryDate).format("DD MMM YYYY")}
                   </p>

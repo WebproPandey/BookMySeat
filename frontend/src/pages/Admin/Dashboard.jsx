@@ -5,7 +5,7 @@ export default function AdminDashboard() {
   
   
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-blue-50">
+    <div className="flex flex-col items-center justify-between h-screen bg-blue-500">
       <Dashboard/>
     </div>
   );

@@ -37,7 +37,7 @@ export default function RevenueModal() {
 
   return (
     <div className="inset-0 bg-gray-200 px-4  py-5   bg-opacity-50 flex items-center justify-center">
-      <div className="bg-white p-6 rounded shadow-lg w-3/4">
+      <div className="bg-white px-4 py-2 md:p-6 rounded shadow-lg w-full md:w-3/4">
         <h2 className="text-2xl font-bold mb-4">Revenue Statistics</h2>
         {loading ? (
           <p>Loading...</p>

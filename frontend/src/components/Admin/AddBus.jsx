@@ -78,34 +78,34 @@ const [busData, setBusData] = useState(initialBusData);
   };
 
   return (
-    <div className="flex items-center justify-center h-full  px-6 py-2">
-      <div className="w-full max-w-5xl bg-gray-100 p-8 rounded-2xl shadow-xl">
+    <div className="flex items-center justify-center h-full px-4 md:px-6 md:py-2">
+      <div className="w-full max-w-5xl bg-gray-100 px-4  py-2  md:p-8 rounded-2xl shadow-xl">
         <h2 className="text-3xl font-semibold  text-center text-blue-700">Add New Bus</h2>
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 w-full md:grid-cols-2 gap-2 place-items-center">
-          <input name="name" placeholder="Bus Name" className=" w-full input border rounded px-4 py-2" onChange={handleChange} />
-          <input name="from" placeholder="From" className=" w-full input border rounded px-4 py-2" onChange={handleChange} />
-          <input name="to" placeholder="To" className=" w-full input border rounded px-4 py-2" onChange={handleChange} />
-          <input name="pickupTime" placeholder="Pickup Time" className=" w-full input border rounded px-4 py-2" onChange={handleChange} />
-          <input name="dropTime" placeholder="Drop Time" className=" w-full input border rounded px-4 py-2" onChange={handleChange} />
-          <input name="distance" type="number" placeholder="Distance (in km)" className=" w-full input border rounded px-4 py-2" onChange={handleChange} />
-          <input name="ac" placeholder="Price AC" className=" w-full input border rounded px-4 py-2" onChange={handleChange} />
-          <input name="nonAc" placeholder="Price Non-AC" className=" w-full input border rounded px-4 py-2" onChange={handleChange} />
-          <input name="deluxe" placeholder="Price Deluxe" className=" w-full input border rounded px-4 py-2" onChange={handleChange} />
-          <input name="nonDeluxe" placeholder="Price Non-Deluxe" className=" w-full input border rounded px-4 py-2" onChange={handleChange} />
-          <select name="busType" className=" w-full input border rounded px-4 py-2" onChange={handleChange} defaultValue="AC">
+        <form onSubmit={handleSubmit} className="grid grid-cols-2 w-full md:grid-cols-2 gap-2 md:place-items-center">
+          <input name="name" placeholder="Bus Name" className=" w-full input border rounded px-2 py-1  md:px-4 md:py-2" onChange={handleChange} />
+          <input name="from" placeholder="From" className=" w-full input border rounded px-2 py-1  md:px-4 md:py-2" onChange={handleChange} />
+          <input name="to" placeholder="To" className=" w-full input border rounded px-2 py-1  md:px-4 md:py-2" onChange={handleChange} />
+          <input name="pickupTime" placeholder="Pickup Time" className=" w-full input border rounded px-2 py-1  md:px-4 md:py-2" onChange={handleChange} />
+          <input name="dropTime" placeholder="Drop Time" className=" w-full input border rounded px-2 py-1  md:px-4 md:py-2" onChange={handleChange} />
+          <input name="distance" type="number" placeholder="Distance (in km)" className=" w-full input border rounded px-2 py-1  md:px-4 md:py-2" onChange={handleChange} />
+          <input name="ac" placeholder="Price AC" className=" w-full input border rounded px-2 py-1  md:px-4 md:py-2" onChange={handleChange} />
+          <input name="nonAc" placeholder="Price Non-AC" className=" w-full input border rounded px-2 py-1  md:px-4 md:py-2" onChange={handleChange} />
+          <input name="deluxe" placeholder="Price Deluxe" className=" w-full input border rounded px-2 py-1  md:px-4 md:py-2" onChange={handleChange} />
+          <input name="nonDeluxe" placeholder="Price Non-Deluxe" className=" w-full input border rounded px-2 py-1  md:px-4 md:py-2" onChange={handleChange} />
+          <select name="busType" className=" w-full input border rounded px-2 py-1  md:px-4 md:py-2" onChange={handleChange} defaultValue="AC">
             <option value="AC">AC</option>
             <option value="Non-AC">Non-AC</option>
             <option value="Deluxe">Deluxe</option>
             <option value="Non-Deluxe">Non-Deluxe</option>
           </select>
-          <input name="seats" type="number" placeholder="Number of Seats" className="w-full input border rounded px-4 py-2" onChange={handleChange} />
+          <input name="seats" type="number" placeholder="Number of Seats" className="w-full input border rounded px-2 py-1  md:px-4 md:py-2" onChange={handleChange} />
           <input type="file" accept="image/*" onChange={(e) => setBusImage(e.target.files[0])} className="col-span-1 md:col-span-2 border rounded px-4 py-2" />
       
 
           <button
             disabled={loading}
             type="submit"
-            className="col-span-1 md:col-span-2 w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-md transition duration-300"
+            className="col-span-1 md:col-span-2 w-full md:w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-md transition duration-300"
           >
             {loading ? 'Uploading...' : 'Add Bus'}
           </button>

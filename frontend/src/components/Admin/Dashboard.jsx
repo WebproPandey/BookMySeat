@@ -14,10 +14,10 @@ export default function Dashboard() {
    const location = useLocation();
   const showHero = location.pathname === "/admin/dashboard";
   return (
-    <div className="min-h-screen w-full bg-gray-100  relative">
-      <div className="w-full flex items-center  justify-between">
+    <div className="h-screen w-full bg-gray-100  relative overflow-hidden">
+      <div className="w-full flex flex-col-reverse md:flex-row items-center  justify-between">
         <NavBar/>
-        <div className='w-full bg-white h-screen flex flex-col  items-center rounded-tl-2xl rounded-bl-2xl' >
+        <div className='w-full bg-white h-[90vh] md:h-screen  flex flex-col  items-center rounded-tl-0 rounded-bl-0 md:rounded-tl-2xl md:rounded-bl-2xl' >
           <Header/>
           {/* change componetes */}
           <div className='w-full  h-full'>
