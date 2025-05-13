@@ -5,6 +5,7 @@ const Ticket = require("../models/ticket.model");
 const PDFDocument = require("pdfkit");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
 
 exports.registerUser = async (req, res) => {
   try {
@@ -43,7 +44,7 @@ exports.registerUser = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Register Error:", error.message);
+    // console.error("Register Error:", error);
     res.status(500).json({ error: "Registration failed" });
   }
 };
@@ -66,7 +67,7 @@ exports.loginUser = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Login Error:", error.message);
+    // console.error("Login Error:", error.message);
     res.status(401).json({ error: error.message || "Login failed" });
   }
 };

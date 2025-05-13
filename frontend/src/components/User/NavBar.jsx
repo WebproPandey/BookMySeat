@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { CloudSnowIcon, Cross, Menu, MenuIcon, User, X } from "lucide-react";
 
 import buslogo from "../../assets/buslogo.png";
+import { toast } from "react-toastify";
 
 const NavBar = () => {
   const dispatch = useDispatch();
@@ -15,19 +16,18 @@ const NavBar = () => {
   const { user, loading } = useSelector((state) => state.userAuth);
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const token = localStorage.getItem("userToken");
 
 
  useEffect(() => {
-    const token = localStorage.getItem("userToken");
-    if (token && !user) {
+    if (!user) {
       dispatch(fetchUserDetails());
     }
-  }, [dispatch, user]);
+  },[dispatch, user]);
   
   const handleLogout = () => {
     dispatch(logoutUser(navigate));
-     setDropdownOpen(false);
+    toast.success("Logout successful");
+    setDropdownOpen(false);
     setMobileMenuOpen(false);
   };
 
@@ -83,7 +83,7 @@ const NavBar = () => {
 
       <div className="rightside flex items-center gap-4 relative">
        
-        {token && (
+        {user &&(
           <>
          <div className="md:hidden" onClick={() => setMobileMenuOpen((o) => !o)}>
           {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}

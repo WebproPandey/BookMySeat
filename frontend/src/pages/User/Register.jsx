@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "../../redux/actions/user/userActions";
 import { handleError } from "../../utils/toast";
@@ -27,6 +27,9 @@ export default function UserRegister() {
     if (!name || !email || !phone || !password) return handleError("All fields are required");
     dispatch(registerUser(userData , navigate ,handleError));
   };
+   useEffect(() => {
+      localStorage.removeItem("userToken");
+    }, []);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">

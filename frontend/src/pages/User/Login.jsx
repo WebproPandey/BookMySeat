@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser} from "../../redux/actions/user/userActions";
 import { handleError } from "../../utils/toast";
@@ -24,11 +24,14 @@ export default function UserLogin() {
     if ( !email || !password) return handleError("All fields are required");
     dispatch(loginUser(loginData , navigate ,handleError));
   };
+  useEffect(() => {
+    localStorage.removeItem("userToken");
+  }, []);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">User Registration</h2>
+        <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">User Login</h2>
         <form onSubmit={handleSignup} className="space-y-4">
         
           <div>

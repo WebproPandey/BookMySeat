@@ -32,6 +32,7 @@ import {
   DOWNLOAD_TICKET_SUCCESS,
   DOWNLOAD_TICKET_FAIL,
 } from "../../actionTypes/userActionTypes";
+import { toast } from 'react-toastify';
 
 export const registerUser = (userData ,navigate, showError) => async (dispatch) => {
   dispatch({ type: USER_REGISTER_REQUEST });
@@ -39,25 +40,16 @@ export const registerUser = (userData ,navigate, showError) => async (dispatch) 
     const response = await api.post("/api/user/register", userData);
     const { token, user } = response.data;
     localStorage.setItem("userToken", token);
-
-
     dispatch({ type: USER_REGISTER_SUCCESS, payload:user });
     navigate("/user/home");
-    // console.log("User registered successfully:", response.data);
+     toast.success("Registration successful!");
 
   } catch (error) {
-    // console.error("Error registering user:", error.message);
     const message = error.response?.data?.error || "Registration failed";
-    if (showError) showError(message)
-      {
-          navigate("/user/login");
-        }
-    dispatch({
-      type: USER_REGISTER_FAIL,
-      payload: error.response?.data?.error || "Registration failed",
-    });
-  }
-};
+    if (showError) showError(message);
+    dispatch({ type: USER_REGISTER_FAIL, payload: message });
+    navigate("/user/login");
+  }}
 
 export const loginUser = (loginData , navigate ,showError) => {
   return async (dispatch) => {
@@ -71,22 +63,18 @@ export const loginUser = (loginData , navigate ,showError) => {
         type: USER_LOGIN_SUCCESS,
         payload: user,
       });
+       toast.success("Login successful!");
       navigate("/user/home");
     } catch (error) {
-      const message = error.response?.data?.error || "Login failed";
-      if (showError) showError(message)
-        {
-            navigate("/user/login");
-          }
-      dispatch({
-        type:USER_LOGIN_FAIL,
-        payload: message,
-      });
-    }
-  };
+        const message = error.response?.data?.error || "Login failed";
+        if (showError) showError(message);
+         dispatch({ type: USER_LOGIN_FAIL, payload: message });
+         navigate("/user/login");
+        }
+    };
 };
 
-export const logoutUser = (navigate) => (dispatch) => {
+export const logoutUser = (navigate ,showError) => (dispatch) => {
   localStorage.removeItem("userToken");
   dispatch({ type: USER_LOGOUT });
   navigate("/user/login");

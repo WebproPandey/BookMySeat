@@ -8,7 +8,8 @@ import { fetchUserDetails } from '../redux/actions/user/userActions';
 const UserLayout = () => {
   const dispatch = useDispatch();
   const { user, loading } = useSelector((state) => state.userAuth);
-      const token = localStorage.getItem("userToken");
+  // console.log(user)
+  const token = localStorage.getItem("userToken");
    useEffect(() => {
       const token = localStorage.getItem("userToken");
       if (token && !user) {
