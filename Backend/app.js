@@ -1,6 +1,7 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+require('dotenv').config();
 const userroutes = require('./routes/userroutes')
 const adminroutes = require('./routes/adminroutes')
 const path = require("path");
@@ -12,7 +13,6 @@ app.use(cors({
     credentials: true
   }));
 
-app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 app.use('/api/user', userroutes);
